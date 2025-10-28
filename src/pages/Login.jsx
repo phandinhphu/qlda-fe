@@ -59,7 +59,7 @@ const Login = () => {
             });
 
             const response = await getCurrentUser();
-            saveUser(response);
+            saveUser(response.user);
 
             navigate('/');
         } catch (error) {

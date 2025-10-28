@@ -6,8 +6,8 @@ const RegisterPage = lazy(() => import('../pages/Register'));
 const HomePage = lazy(() => import('../pages/Home'));
 
 const publicRoutes = [
-    { path: '/login', component: LoginPage, layout: DefaultLayout, requiresAuth: false },
-    { path: '/register', component: RegisterPage, layout: DefaultLayout, requiresAuth: false },
+    { path: '/login', component: LoginPage, layout: null, requiresAuth: false },
+    { path: '/register', component: RegisterPage, layout: null, requiresAuth: false },
     { path: '/', component: HomePage, layout: DefaultLayout, requiresAuth: true },
 ];
 
