@@ -12,7 +12,7 @@ const publicRoutes = [
     { path: '/login', component: LoginPage, layout: null, requiresAuth: false },
     { path: '/register', component: RegisterPage, layout: null, requiresAuth: false },
     { path: '/', component: HomePage, layout: DefaultLayout, requiresAuth: true },
-    { path: '/project/:projectId', component: ProjectPage, layout: DefaultLayout, requiresAuth: true },
+    { path: '/project/:projectId', component: ProjectPage, layout: null, requiresAuth: true },
     { path: '/forgot-password', component: ForgotPasswordPage, layout: null, requiresAuth: false },
     { path: '/reset-password/:token', component: ResetPasswordPage, layout: null, requiresAuth: false },
     { path: '/profile', component: ProfilePage, layout: DefaultLayout, requiresAuth: true },

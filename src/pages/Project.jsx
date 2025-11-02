@@ -4,23 +4,7 @@ import { useParams } from 'react-router-dom';
 import ListComponent from '../components/listComponents/ListComponent';
 import AddListForm from '../components/listComponents/AddListForm';
 import { getListsByProject, createList } from '../services/listServices';
-// Dữ liệu mẫu (chỉ dùng khi test, sau này sẽ lấy từ API)
-const mockData = [
-    {
-        id: 'list-1',
-        title: 'Product Backlog',
-        tasks: [
-            { id: 'task-1', title: 'Epic 1' },
-            { id: 'task-2', title: 'Epic 2' },
-        ],
-    },
-    {
-        id: 'list-2',
-        title: 'Thiết kế giao diện',
-        tasks: [{ id: 'task-4', title: 'Epic 1: Phương' }],
-    },
-];
-
+import Header from '../components/HeaderComponents/Header';
 export default function ProjectPage() {
     const { projectId } = useParams();
     const [lists, setLists] = useState([]); // State này là một MẢNG (array)
@@ -59,6 +43,7 @@ export default function ProjectPage() {
         // div cha: cao 100% màn hình, layout dọc
         <div className="flex flex-col w-screen h-screen bg-[#1a1a1a] text-white overflow-hidden">
             {/* Header (Bạn có thể thêm Navbar ở đây) */}
+            <Header></Header>
             <header className="p-4 flex-shrink-0">
                 <h1 className="text-2xl font-bold">Project: {projectId}</h1>
             </header>

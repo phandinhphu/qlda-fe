@@ -28,7 +28,7 @@ export default function AddListForm({ onSaveList }) {
 
     // Trạng thái form nhập liệu
     return (
-        <div className="flex-shrink-0 w-[300px] bg-[#2b2b2b] rounded-xl p-3 shadow-lg">
+        <div className="max-h-35 flex-shrink-0 w-[300px] bg-[#2b2b2b] rounded-xl p-3 shadow-lg">
             <input
                 type="text"
                 placeholder="Nhập tiêu đề danh sách..."
