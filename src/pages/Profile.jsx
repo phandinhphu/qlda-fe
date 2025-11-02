@@ -102,7 +102,7 @@ export default function ProfilePage() {
                             <h2 className="text-lg font-semibold text-gray-900">
                                 Dự án của tôi ({userProjects.length})
                             </h2>
-                            <a href="#" className="text-sm font-medium text-blue-600 hover:underline">
+                            <a href="/projects" className="text-sm font-medium text-blue-600 hover:underline">
                                 Xem tất cả
                             </a>
                         </div>
