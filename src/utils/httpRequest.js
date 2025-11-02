@@ -2,7 +2,7 @@ import axios from 'axios';
 import { API_URL } from './constants';
 
 const QLDARequest = axios.create({
-    baseURL: API_URL ? `${API_URL}/api` : 'http://localhost:3000/api', // Fallback to localhost
+    baseURL: API_URL ? `${API_URL}/api` : 'http://localhost:5000/api',
     headers: {
         'Content-Type': 'application/json',
     },
