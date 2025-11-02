@@ -76,7 +76,7 @@ const Login = () => {
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Email Field */}
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
+                        <label htmlFor="email" className="text-left block text-sm font-medium text-gray-700 mb-1.5">
                             Email
                         </label>
                         <input
@@ -89,7 +89,7 @@ const Login = () => {
                                     setErrors({ ...errors, email: '' });
                                 }
                             }}
-                            className={`w-full px-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ${
+                            className={`text-black w-full px-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ${
                                 errors.email ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'
                             }`}
                             disabled={isLoading}
@@ -110,7 +110,7 @@ const Login = () => {
 
                     {/* Password Field */}
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
+                        <label htmlFor="password" className="text-left block text-sm font-medium text-gray-700 mb-1.5">
                             Mật khẩu
                         </label>
                         <input
@@ -123,7 +123,7 @@ const Login = () => {
                                     setErrors({ ...errors, password: '' });
                                 }
                             }}
-                            className={`w-full px-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ${
+                            className={`text-black w-full px-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ${
                                 errors.password ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'
                             }`}
                             disabled={isLoading}

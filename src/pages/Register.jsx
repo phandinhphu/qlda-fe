@@ -104,7 +104,10 @@ const Register = () => {
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Display Name Field */}
                     <div>
-                        <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 mb-1.5">
+                        <label
+                            htmlFor="displayName"
+                            className="text-left block text-sm font-medium text-gray-700 mb-1.5"
+                        >
                             Tên hiển thị
                         </label>
                         <div className="relative">
@@ -134,7 +137,7 @@ const Register = () => {
                                     }
                                 }}
                                 placeholder="Tên của bạn"
-                                className={`w-full pl-10 pr-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ${
+                                className={`placeholder: text-gray-400 text-black w-full pl-10 pr-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ${
                                     errors.displayName ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'
                                 }`}
                                 disabled={isLoading}
@@ -156,7 +159,7 @@ const Register = () => {
 
                     {/* Email Field */}
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
+                        <label htmlFor="email" className="text-left block text-sm font-medium text-gray-700 mb-1.5">
                             Email
                         </label>
                         <div className="relative">
@@ -186,7 +189,7 @@ const Register = () => {
                                     }
                                 }}
                                 placeholder="mail@example.com"
-                                className={`w-full pl-10 pr-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ${
+                                className={`placeholder:text-gray-400 text-black w-full pl-10 pr-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ${
                                     errors.email ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'
                                 }`}
                                 disabled={isLoading}
@@ -208,7 +211,7 @@ const Register = () => {
 
                     {/* Password Field */}
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
+                        <label htmlFor="password" className="text-left block text-sm font-medium text-gray-700 mb-1.5">
                             Mật khẩu
                         </label>
                         <div className="relative">
@@ -238,7 +241,7 @@ const Register = () => {
                                     }
                                 }}
                                 placeholder="••••••••••••••••"
-                                className={`w-full pl-10 pr-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ${
+                                className={`placeholder:text-gray-400   text-black w-full pl-10 pr-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ${
                                     errors.password ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'
                                 }`}
                                 disabled={isLoading}
@@ -260,7 +263,7 @@ const Register = () => {
 
                     {/* Confirm Password Field */}
                     <div>
-                        <label htmlFor="confirm" className="block text-sm font-medium text-gray-700 mb-1.5">
+                        <label htmlFor="confirm" className="text-left block text-sm font-medium text-gray-700 mb-1.5">
                             Xác nhận mật khẩu
                         </label>
                         <div className="relative">
@@ -290,7 +293,7 @@ const Register = () => {
                                     }
                                 }}
                                 placeholder="••••••••••••••••"
-                                className={`w-full pl-10 pr-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ${
+                                className={`placeholder:text-gray-400 text-black w-full pl-10 pr-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition ${
                                     errors.confirm ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'
                                 }`}
                                 disabled={isLoading}

@@ -79,7 +79,10 @@ export default function ResetPassword() {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {/* Password Field */}
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
+                            <label
+                                htmlFor="password"
+                                className="text-left block text-sm font-medium text-gray-700 mb-1.5"
+                            >
                                 Mật khẩu mới
                             </label>
                             <input
@@ -94,7 +97,10 @@ export default function ResetPassword() {
 
                         {/* Confirm Password Field */}
                         <div>
-                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1.5">
+                            <label
+                                htmlFor="confirmPassword"
+                                className="text-left block text-sm font-medium text-gray-700 mb-1.5"
+                            >
                                 Xác nhận mật khẩu mới
                             </label>
                             <input
