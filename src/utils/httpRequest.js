@@ -9,10 +9,45 @@ const QLDARequest = axios.create({
     withCredentials: true,
 });
 
-// Xử lý lỗi toàn cục
+// Request interceptor: Add Authorization header if token exists in cookie
+QLDARequest.interceptors.request.use(
+    (config) => {
+        // Get token from cookies if available
+        const token = getCookie('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    },
+);
+
+// Helper function to get cookie value
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+}
+
+// Response interceptor: Handle errors globally
 QLDARequest.interceptors.response.use(
     (response) => response,
     (error) => {
+        // Log error for debugging
+        if (error.response) {
+            console.error('API Error Response:', {
+                status: error.response.status,
+                data: error.response.data,
+                url: error.config?.url,
+            });
+        } else if (error.request) {
+            console.error('API Error Request:', error.request);
+        } else {
+            console.error('API Error:', error.message);
+        }
         return Promise.reject(error);
     },
 );
@@ -29,6 +64,11 @@ export const post = async (url, data = {}) => {
 
 export const put = async (url, data = {}) => {
     const response = await QLDARequest.put(url, data);
+    return response;
+};
+
+export const patch = async (url, data = {}) => {
+    const response = await QLDARequest.patch(url, data);
     return response;
 };
 

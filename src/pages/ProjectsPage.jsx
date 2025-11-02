@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ProjectList from '../components/projects/ProjectList';
 import ProjectModal from '../components/projects/ProjectModal';
 import ProjectForm from '../components/projects/ProjectForm';
@@ -6,6 +7,7 @@ import Toast from '../components/Toast';
 import * as projectService from '../services/projectService';
 
 const ProjectsPage = () => {
+    const navigate = useNavigate();
     const [projects, setProjects] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -102,10 +104,9 @@ const ProjectsPage = () => {
         }
     };
 
-    // View handler (có thể mở rộng sau)
+    // View handler - Navigate to board page
     const handleView = (project) => {
-        console.log('View project:', project);
-        // TODO: Navigate to project detail page
+        navigate(`/projects/${project._id}/board`);
     };
 
     return (
