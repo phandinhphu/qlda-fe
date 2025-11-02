@@ -51,3 +51,22 @@ export const getCurrentUser = async () => {
         }
     }
 };
+
+export const forgotPassword = async (email) => {
+    try {
+        // Chỉ gửi email, không cần nhận lại gì
+        await httpRequest.post('/auth/forgot-password', { email });
+    } catch (error) {
+        // Vẫn throw lỗi để component biết (nếu cần)
+        throw new Error(error.response?.data?.message || 'Lỗi khi gửi email.');
+    }
+};
+
+export const resetPassword = async (token, password) => {
+    try {
+        const response = await httpRequest.post(`/auth/reset-password/${token}`, { password });
+        return response.data; // Trả về thông báo thành công
+    } catch (error) {
+        throw new Error(error.response?.data?.message || 'Token không hợp lệ hoặc đã hết hạn.');
+    }
+};

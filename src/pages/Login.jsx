@@ -12,55 +12,44 @@ const Login = () => {
     const [errors, setErrors] = useState({});
     const [toast, setToast] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-
     const { login, saveUser } = useAuth();
     const navigate = useNavigate();
-
     const validateForm = () => {
         const newErrors = {};
-
         // Email validation
         if (!email) {
             newErrors.email = 'Email là bắt buộc';
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             newErrors.email = 'Email không hợp lệ';
         }
-
         // Password validation
         if (!password) {
             newErrors.password = 'Mật khẩu là bắt buộc';
         } else if (password.length < 6) {
             newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
         }
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         // Clear previous errors and toast
         setErrors({});
         setToast(null);
-
         // Validate form
         if (!validateForm()) {
             return;
         }
-
         setIsLoading(true);
-
         try {
             await login(email, password);
             setToast({
                 message: 'Đăng nhập thành công! Đang chuyển hướng...',
                 type: 'success',
             });
-
             const response = await getCurrentUser();
             saveUser(response.user);
-
             navigate('/');
         } catch (error) {
             setToast({
@@ -152,6 +141,14 @@ const Login = () => {
                             </p>
                         )}
                     </div>
+
+                    {/* --- PHẦN THÊM MỚI --- */}
+                    <div className="text-right">
+                        <Link to="/forgot-password" className="text-sm font-medium text-blue-600 hover:underline">
+                            Quên mật khẩu?
+                        </Link>
+                    </div>
+                    {/* --- KẾT THÚC PHẦN THÊM MỚI --- */}
 
                     {/* Submit Button */}
                     <button
