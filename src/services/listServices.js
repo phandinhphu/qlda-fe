@@ -17,7 +17,7 @@ export const getListsByProject = async (projectId) => {
 export const createList = async (projectId, title) => {
     try {
         const response = await httpRequest.post(`/lists/${projectId}`, { title });
-        return response.data; // Trả về list vừa được tạo
+        return response.data.data; // Trả về list vừa được tạo
     } catch (error) {
         console.error('Error in createList:', error);
         if (error.response && error.response.data.message) {
@@ -46,7 +46,7 @@ export const deleteList = async (listId) => {
     try {
         // Giả sử httpRequest của bạn có hàm .delete()
         const response = await httpRequest.del(`/lists/${listId}`);
-        return response.data; // Trả về { message, _id }
+        return response.data.messege; // Trả về { message, _id }
     } catch (error) {
         console.error('Error in deleteList:', error);
         if (error.response && error.response.data.message) {
