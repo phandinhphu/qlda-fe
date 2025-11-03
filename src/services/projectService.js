@@ -18,7 +18,7 @@ export const getProjectsByUser = async (userId) => {
 export const getProjectById = async (id) => {
     try {
         const response = await httpRequest.get(`/projects/${id}`);
-        return response.data;
+        return response.data.data;
     } catch (error) {
         console.error('Error in getProjectById:', error);
         if (error.response && error.response.data.message) {
