@@ -5,6 +5,7 @@ import ListComponent from '../components/listComponents/ListComponent';
 import AddListForm from '../components/listComponents/AddListForm';
 import { getListsByProject, createList } from '../services/listServices';
 import Header from '../components/HeaderComponents/Header';
+import ShareButton from '../components/addMemberComponent/ShareButton';
 export default function ProjectPage() {
     const { projectId } = useParams();
     const [lists, setLists] = useState([]); // State này là một MẢNG (array)
@@ -46,6 +47,7 @@ export default function ProjectPage() {
             <Header></Header>
             <header className="p-4 flex-shrink-0">
                 <h1 className="text-2xl font-bold">Project: {projectId}</h1>
+                <ShareButton projectId={projectId} />
             </header>
 
             {/* SỬA DÒNG NÀY: 

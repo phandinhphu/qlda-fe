@@ -33,9 +33,9 @@ export const createTask = async (taskData) => {
  * @param {string} taskId ID của Task
  * @param {object} updates Dữ liệu cập nhật, Vd: { title, status, list_id }
  */
-export const updateTask = async (taskId, updates) => {
+export const updateTask = async (taskId, updateData) => {
     try {
-        const response = await httpRequest.put(`/tasks/${taskId}`, updates);
+        const response = await httpRequest.put(`/tasks/${taskId}`, updateData);
         return response.data; // Trả về task đã cập nhật
     } catch (error) {
         console.error('Error in updateTask:', error);
@@ -50,14 +50,9 @@ export const updateTask = async (taskId, updates) => {
 export const deleteTask = async (taskId) => {
     try {
         const response = await httpRequest.del(`/tasks/${taskId}`);
-        return response.data; // Trả về { message, _id }
+        return response.message;
     } catch (error) {
         console.error('Error in deleteTask:', error);
-        if (error.response && error.response.data.message) {
-            throw new Error(error.response.data.message);
-        } else {
-            throw new Error('Không thể xóa công việc.');
-        }
     }
 };
 
