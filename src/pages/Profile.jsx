@@ -113,7 +113,7 @@ export default function ProfilePage() {
                                 {userProjects.map((project) => (
                                     <Link
                                         key={project._id}
-                                        to={`/project/${project._id}`} // 3. Tạo đường dẫn động
+                                        to={`/projects/${project._id}`} // 3. Tạo đường dẫn động
                                     >
                                         <ProjectMiniCard project={project} />
                                     </Link>

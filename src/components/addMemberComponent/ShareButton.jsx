@@ -9,7 +9,7 @@ export default function ShareButton({ projectId }) {
         <>
             <button
                 onClick={() => setOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 transition"
+                className="flex items-center gap-2 px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-500 transition"
             >
                 <UserPlus className="w-5 h-5" />
                 <span>Chia sẻ</span>

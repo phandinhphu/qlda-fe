@@ -128,22 +128,24 @@ export default function TaskComponent({ list, onListDeleted }) {
     return (
         // Thẻ div bên ngoài (wrapper) cho phép co giãn
         <div className="flex-shrink-0 w-[300px] relative">
-            <div className="flex flex-col max-h-full bg-[#2b2b2b] rounded-xl p-4 shadow-lg">
+            {/* SỬA ĐỔI: Đổi nền cột thành xám nhạt (light mode) */}
+            <div className="flex flex-col max-h-full bg-gray-100 rounded-lg p-4 shadow-sm border border-gray-200">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-4 flex-shrink-0">
-                    <h2 className="text-lg font-semibold text-white">{list.title}</h2>
+                    {/* SỬA ĐỔI: Đổi màu chữ */}
+                    <h2 className="text-lg font-semibold text-gray-900">{list.title}</h2>
                     <button
                         ref={buttonRef}
-                        onClick={() => setIsMenuOpen((prev) => !prev)} // Toggle menu
-                        className="text-gray-400 hover:bg-[#4a4a4a] p-1 rounded-md transition-colors"
+                        onClick={() => setIsMenuOpen((prev) => !prev)}
+                        // SỬA ĐỔI: Nền trắng, hover xám, và thêm viền nhẹ
+                        className="bg-gray-900/5 hover:bg-gray-900/10 text-gray-700 p-1 rounded-md transition-colors border border-gray-200 shadow-sm"
                     >
-                        <Icon name="more_horiz" />
+                        <Icon name="more_horiz" /> {/* Thêm màu cho icon */}
                     </button>
                 </div>
 
                 {/* Danh sách Task (cho phép cuộn) */}
                 <div className="flex-grow overflow-y-auto pr-1">
-                    {/* 3. Thay đổi: Dùng ._id từ database thay vì .id */}
                     {tasks.map((task) => (
                         <TaskCard
                             key={task._id}
@@ -158,9 +160,11 @@ export default function TaskComponent({ list, onListDeleted }) {
 
                     {/* Form thêm task */}
                     {showAddTaskForm && (
-                        <div className="bg-[#363636] rounded-lg p-2.5 shadow-sm mt-2">
+                        // SỬA ĐỔI: Nền form
+                        <div className="bg-white rounded-lg p-2.5 shadow-sm mt-2 border border-gray-200">
                             <textarea
-                                className="w-full bg-[#4a4a4a] text-gray-200 p-2.5 rounded-md border border-[#555] focus:outline-none focus:border-gray-400 resize-y"
+                                // SỬA ĐỔI: Nền, chữ, viền
+                                className="w-full bg-white text-gray-900 p-2.5 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
                                 placeholder="Nhập tiêu đề cho thẻ này..."
                                 value={newTaskTitle}
                                 onChange={(e) => setNewTaskTitle(e.target.value)}
@@ -170,13 +174,13 @@ export default function TaskComponent({ list, onListDeleted }) {
                             <div className="flex items-center mt-2.5">
                                 <button
                                     onClick={handleAddTask}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-1.5 px-3.5 rounded-md text-sm transition-colors"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-3.5 rounded-md text-sm transition-colors"
                                 >
                                     Thêm thẻ
                                 </button>
                                 <button
                                     onClick={handleToggleAddTaskForm}
-                                    className="text-gray-400 hover:bg-[#4a4a4a] p-1.5 rounded-md ml-2 transition-colors"
+                                    className="text-gray-500 bg-gray-900/7 hover:bg-gray-900/10 py-1 px-2 rounded-md ml-2 transition-colors"
                                 >
                                     <Icon name="close" className="text-xl" />
                                 </button>
@@ -189,7 +193,7 @@ export default function TaskComponent({ list, onListDeleted }) {
                 {!showAddTaskForm && (
                     <button
                         onClick={handleToggleAddTaskForm}
-                        className="flex items-center w-full mt-2 p-2.5 bg-[#363636] hover:bg-[#4a4a4a] text-gray-400 hover:text-gray-200 rounded-lg transition-colors flex-shrink-0"
+                        className="flex items-center w-full mt-2 p-2.5 bg-gray-900/5 hover:bg-gray-900/10 text-gray-700 rounded-lg transition-colors flex-shrink-0"
                     >
                         <Icon name="add" className="mr-2 text-lg" />
                         <span className="text-sm font-medium">Thêm thẻ</span>
@@ -198,8 +202,7 @@ export default function TaskComponent({ list, onListDeleted }) {
             </div>
             {isMenuOpen && (
                 <div ref={menuRef}>
-                    {' '}
-                    {/* Bọc menu trong div có ref */}
+                    {/* ⚠️ LƯU Ý: Bạn sẽ cần sửa file ListMenu.jsx sang light mode */}
                     <ListMenu onDelete={handleDeleteList} />
                 </div>
             )}

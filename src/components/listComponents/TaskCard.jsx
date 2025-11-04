@@ -23,17 +23,11 @@ export default function TaskCard({ title, onClick, onEdit, onDelete, status, onT
     return (
         <div
             onClick={!isEditing ? onClick : undefined}
-            className="relative bg-[#363636] hover:bg-[#4a4a4a] p-3 rounded-lg mb-2 cursor-pointer shadow-sm transition-colors"
+            className="relative bg-white hover:bg-gray-50 p-3 rounded-lg mb-2 cursor-pointer shadow-sm border border-gray-200 transition-colors"
         >
-            {/* Hàng ngang chứa checkbox + tiêu đề */}
             <div className="flex items-center">
-                {/* Checkbox ở đầu dòng */}
-                <TaskCheckbox
-                    checked={status === 'done' ? true : false}
-                    onChange={(checked) => onToggleStatus(checked ? 'done' : 'todo')}
-                />
+                <TaskCheckbox checked={completed} onChange={(checked) => onToggleStatus(checked ? 'done' : 'todo')} />
 
-                {/* Tiêu đề hoặc input chỉnh sửa */}
                 {isEditing ? (
                     <input
                         ref={inputRef}
@@ -48,19 +42,18 @@ export default function TaskCard({ title, onClick, onEdit, onDelete, status, onT
                                 setIsEditing(false);
                             }
                         }}
-                        className="flex-1 bg-[#4a4a4a] text-gray-200 p-1.5 rounded-md focus:outline-none border border-gray-600 focus:border-gray-400 text-sm"
+                        className="flex-1 bg-gray-50 text-gray-800 p-1.5 rounded-md focus:outline-none border border-gray-300 focus:border-gray-400 text-sm"
                     />
                 ) : (
                     <p
                         className={`flex-1 text-sm break-words ${
-                            completed ? 'text-gray-500 line-through' : 'text-gray-200'
+                            completed ? 'text-gray-400 line-through' : 'text-gray-800'
                         }`}
                     >
                         {title}
                     </p>
                 )}
 
-                {/* Menu ba chấm ở cuối dòng */}
                 <TaskMenu onEdit={() => setIsEditing(true)} onDelete={onDelete} />
             </div>
         </div>
