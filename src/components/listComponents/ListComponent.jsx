@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import TaskCard from './TaskCard';
 // 1. Import service API
-import { createTask } from '../../services/taskServices';
+import { createTask, deleteTask, updateTask } from '../../services/taskServices';
 import { deleteList } from '../../services/listServices';
 import ListMenu from './ListMenu';
 const Icon = ({ name, className = '' }) => <span className={`material-icons ${className}`}>{name}</span>;
@@ -71,6 +71,37 @@ export default function TaskComponent({ list, onListDeleted }) {
         console.log('Clicked task:', taskId);
         // TODO: Mở modal chi tiết task
     };
+
+    const onEditTask = async (taskId, editedTitle) => {
+        try {
+            // Gọi API cập nhật task
+            const res = await updateTask(taskId, { title: editedTitle });
+
+            // Cập nhật lại danh sách task trong state
+            setTasks((prevTasks) =>
+                prevTasks.map((task) => (task._id === taskId ? { ...task, title: editedTitle } : task)),
+            );
+
+            console.log('Cập nhật thành công:', res.message);
+        } catch (error) {
+            console.error('Lỗi khi cập nhật task:', error.message);
+            alert(error.message || 'Không thể cập nhật công việc.');
+        }
+    };
+
+    const onDeleteTask = async (taskId) => {
+        if (!window.confirm('Bạn có chắc muốn xóa task này không?')) return;
+
+        try {
+            await deleteTask(taskId);
+            // Cập nhật lại state tasks
+            setTasks((prev) => prev.filter((task) => task._id !== taskId));
+        } catch (error) {
+            console.error('Lỗi khi xóa task:', error);
+            alert('Xóa thất bại!');
+        }
+    };
+
     const handleDeleteList = async () => {
         try {
             await deleteList(list._id); // Gọi API backend
@@ -81,6 +112,19 @@ export default function TaskComponent({ list, onListDeleted }) {
             alert(`Lỗi: ${error.message}`);
         }
     };
+
+    const handleToggleStatus = async (taskId, newStatus) => {
+        try {
+            // Gọi API cập nhật status
+            await updateTask(taskId, { status: newStatus });
+
+            // Cập nhật lại trong state
+            setTasks((prev) => prev.map((t) => (t._id === taskId ? { ...t, status: newStatus } : t)));
+        } catch (error) {
+            console.error('Lỗi khi cập nhật trạng thái:', error);
+        }
+    };
+
     return (
         // Thẻ div bên ngoài (wrapper) cho phép co giãn
         <div className="flex-shrink-0 w-[300px] relative">
@@ -103,8 +147,15 @@ export default function TaskComponent({ list, onListDeleted }) {
                 {/* Danh sách Task (cho phép cuộn) */}
                 <div className="flex-grow overflow-y-auto pr-1">
                     {tasks.map((task) => (
-                        // ⚠️ LƯU Ý: Bạn sẽ cần sửa file TaskCard.jsx sang light mode
-                        <TaskCard key={task._id} title={task.title} onClick={() => handleCardClick(task._id)} />
+                        <TaskCard
+                            key={task._id}
+                            title={task.title}
+                            onClick={() => handleCardClick(task._id)}
+                            onEdit={(editedTitle) => onEditTask(task._id, editedTitle)}
+                            onDelete={() => onDeleteTask(task._id)}
+                            status={task.status}
+                            onToggleStatus={(newStatus) => handleToggleStatus(task._id, newStatus)}
+                        />
                     ))}
 
                     {/* Form thêm task */}

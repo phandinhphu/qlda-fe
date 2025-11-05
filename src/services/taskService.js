@@ -45,14 +45,9 @@ export const updateTask = async (taskId, data) => {
 export const deleteTask = async (taskId) => {
     try {
         const response = await httpRequest.del(`/tasks/${taskId}`);
-        return response.data;
+        return response.message;
     } catch (error) {
         console.error('Error in deleteTask:', error);
-        if (error.response && error.response.data.message) {
-            throw new Error(error.response.data.message);
-        } else {
-            throw new Error('Có lỗi xảy ra khi xóa task');
-        }
     }
 };
 

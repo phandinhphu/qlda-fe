@@ -6,6 +6,7 @@ import AddListForm from '../components/listComponents/AddListForm';
 import { getListsByProject, createList } from '../services/listServices';
 import { getProjectById } from '../services/projectService';
 import Header from '../components/HeaderComponents/Header';
+import ShareButton from '../components/addMemberComponent/ShareButton';
 
 export default function ProjectPage() {
     const { projectId } = useParams();
@@ -52,8 +53,9 @@ export default function ProjectPage() {
             <Header></Header>
 
             {/* 3. Thêm nền trắng và viền dưới cho header của Project */}
-            <header className="p-4 flex-shrink-0 bg-white border-b border-gray-200">
-                <h1 className="text-2xl font-bold">{project.project_name}</h1>
+            <header className="p-4 flex items-center justify-between bg-white border-b border-gray-200">
+                <h1 className="text-2xl font-bold pl-4">{project.project_name}</h1>
+                <ShareButton projectId={project._id} />
             </header>
 
             {/* Vùng main (đã đúng) */}
