@@ -50,7 +50,7 @@ const Login = () => {
             });
             const response = await getCurrentUser();
             saveUser(response.user);
-            navigate('/');
+            navigate('/projects');
         } catch (error) {
             setToast({
                 message: error.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.',

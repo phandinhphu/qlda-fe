@@ -70,3 +70,14 @@ export const deleteProject = async (id) => {
         }
     }
 };
+
+export const getMyProjectsWithStats = async () => {
+    try {
+        const response = await httpRequest.get('/projects/projectsUserJoined');
+        // API này trả về mảng project đã có 'percentage'
+        return response.data;
+    } catch (error) {
+        console.error('Error in getMyProjectsWithStats:', error);
+        throw new Error(error.response?.data?.message || 'Không thể tải danh sách dự án.');
+    }
+};

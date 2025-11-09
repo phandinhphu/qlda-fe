@@ -5,7 +5,7 @@ import ProjectModal from '../components/projects/ProjectModal';
 import ProjectForm from '../components/projects/ProjectForm';
 import { useAuth } from '../hooks/auth';
 import Toast from '../components/Toast';
-import * as projectService from '../services/projectService';
+import * as projectService from '../services/projectServices';
 
 const ProjectsPage = () => {
     const { user } = useAuth();
