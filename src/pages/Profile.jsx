@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../hooks/auth';
-import { getProjectsByUser } from '../services/projectService'; // Import service mới
+import { getProjectsByUser, getMyProjectsWithStats } from '../services/projectServices';
 import Spinner from '../components/Spinner';
 import { Link } from 'react-router-dom';
-// Component Icon (Tiện ích)
+import WorkDoneCard from '../components/profileComponents/WorkDoneCard';
+import ProjectProgressCard from '../components/profileComponents/ProjectProgressCard';
 const Icon = ({ name, className = '' }) => <span className={`material-icons ${className}`}>{name}</span>;
 
-// --- Component con: Thẻ Project nhỏ ---
 const ProjectMiniCard = ({ project }) => (
     <div className="text-center">
-        {/* Dùng ảnh placeholder nếu không có thumbnail */}
         <img
             src={project.thumbnail_url || 'https://picsum.photos/200/200?grayscale&blur=1'}
             alt={project.project_name}
@@ -21,31 +20,55 @@ const ProjectMiniCard = ({ project }) => (
 
 export default function ProfilePage() {
     const { user } = useAuth(); // Lấy thông tin user hiện tại
-    const [userProjects, setUserProjects] = useState([]);
+    const [userProjects, setUserProjects] = useState([]); //project user tạo
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showCompleted, setShowCompleted] = useState(false);
+    const [projectsWithStats, setProjectsWithStats] = useState([]); //project user tham gia
+
+    const { incompleteProjects, completedProjects } = useMemo(() => {
+        const incomplete = [];
+        const completed = [];
+
+        if (Array.isArray(projectsWithStats)) {
+            for (const project of projectsWithStats) {
+                if (project.percentage === 100) {
+                    completed.push(project);
+                } else {
+                    incomplete.push(project);
+                }
+            }
+        }
+
+        return { incompleteProjects: incomplete, completedProjects: completed };
+    }, [projectsWithStats]);
 
     useEffect(() => {
-        // Chỉ chạy khi user đã được load và có _id
         if (user && user._id) {
-            const fetchProjects = async () => {
+            const fetchAllData = async () => {
                 try {
                     setLoading(true);
+                    setError(null);
 
-                    // GỌI API LẤY DỰ ÁN
-                    const data = await getProjectsByUser(user._id);
-                    setUserProjects(data);
+                    const [projectsData, statsData] = await Promise.all([
+                        getProjectsByUser(user._id),
+                        getMyProjectsWithStats(),
+                    ]);
+
+                    setUserProjects(projectsData || []);
+                    setProjectsWithStats(statsData || []);
                 } catch (err) {
+                    console.error('Lỗi khi tải dữ liệu trang:', err);
                     setError(err.message);
                     setUserProjects([]);
+                    setProjectsWithStats([]);
                 } finally {
                     setLoading(false);
                 }
             };
-
-            fetchProjects();
+            fetchAllData();
         }
-    }, [user]); // Phụ thuộc vào user
+    }, [user]);
 
     // --- Xử lý trạng thái Loading ---
     if (loading || !user) {
@@ -100,7 +123,7 @@ export default function ProfilePage() {
                     <div className="bg-white p-6 rounded-lg shadow-sm">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-lg font-semibold text-gray-900">
-                                Dự án của tôi ({userProjects.length})
+                                Dự án đã tạo ({userProjects.length})
                             </h2>
                             <a href="/projects" className="text-sm font-medium text-blue-600 hover:underline">
                                 Xem tất cả
@@ -124,10 +147,54 @@ export default function ProfilePage() {
                         )}
                     </div>
 
-                    {/* Thẻ Thống kê (Dữ liệu mẫu) */}
-                    <div className="bg-white p-6 rounded-lg shadow-sm">
-                        <h2 className="text-lg font-semibold text-gray-900">Thống kê công việc</h2>
-                        {/* ... (Bạn có thể đặt WorkDoneCard vào đây) ... */}
+                    {/* Thẻ Tiến độ Dự án và Công việc Hoàn thành */}
+                    <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="lg:col-span-1">
+                            <div className="bg-white p-6 rounded-lg shadow-sm h-full">
+                                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                                    Dự án tham gia ({projectsWithStats.length})
+                                </h2>
+
+                                {/* 1. Kiểm tra nếu không có dự án nào CẢ */}
+                                {projectsWithStats.length === 0 ? (
+                                    <p className="text-gray-500">Bạn chưa tham gia dự án nào.</p>
+                                ) : (
+                                    <div className="grid grid-cols-1 gap-x-6 gap-y-4">
+                                        {/* 2. Luôn render các dự án CHƯA HOÀN THÀNH */}
+                                        {incompleteProjects.map((projectStat) => (
+                                            <ProjectProgressCard key={projectStat._id} project={projectStat} />
+                                        ))}
+
+                                        {/* 3. Nút Bấm Ẩn/Hiện */}
+                                        {completedProjects.length > 0 && (
+                                            <button
+                                                onClick={() => setShowCompleted((prev) => !prev)}
+                                                className="bg-gray-900/5 hover:bg-gray-900/10 text-gray-700 rounded-xl transition-colors"
+                                            >
+                                                {showCompleted ? 'Ẩn' : 'Hiển thị'} {completedProjects.length} dự án đã
+                                                hoàn thành
+                                            </button>
+                                        )}
+
+                                        {/* 4. Chỉ render các dự án HOÀN THÀNH nếu showCompleted = true */}
+                                        {showCompleted &&
+                                            completedProjects.map((projectStat) => (
+                                                <ProjectProgressCard key={projectStat._id} project={projectStat} />
+                                            ))}
+
+                                        {/* 5. Hiển thị thông báo nếu chỉ có dự án hoàn thành (và đang bị ẩn) */}
+                                        {incompleteProjects.length === 0 &&
+                                            completedProjects.length > 0 &&
+                                            !showCompleted && (
+                                                <p className="text-gray-500 text-sm">Tất cả dự án đều đã hoàn thành.</p>
+                                            )}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div className="lg:col-span-1">
+                            <WorkDoneCard />
+                        </div>
                     </div>
                 </div>
             </div>

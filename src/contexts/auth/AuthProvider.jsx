@@ -24,13 +24,15 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const handleLogin = async (username, password) => {
-        // handle login logic here
         console.log('Logging in with:', username, password);
         try {
             await authServices.login(username, password);
+            const currentUser = await authServices.getCurrentUser();
+            setUser(currentUser.user);
         } catch (error) {
             console.error('Login error:', error);
-            throw new Error('Login failed: ' + error.message);
+            setUser(null);
+            throw new Error(error.message || 'Login failed');
         }
     };
 

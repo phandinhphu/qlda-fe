@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import ListComponent from '../components/listComponents/ListComponent';
 import AddListForm from '../components/listComponents/AddListForm';
 import { getListsByProject, createList, reorderLists } from '../services/listServices';
-import { getProjectById } from '../services/projectService';
+import { getProjectById } from '../services/projectServices';
 import Header from '../components/HeaderComponents/Header';
 import ShareButton from '../components/addMemberComponent/ShareButton';
 import {
@@ -104,8 +104,6 @@ export default function ProjectPage() {
                     <h1 className="text-2xl font-bold pl-4">{project.project_name}</h1>
                     <ShareButton projectId={project._id} />
                 </header>
-
-                {/* Vùng main (đã đúng) */}
                 <main className="flex-grow flex p-4 overflow-x-auto space-x-4 min-h-0">
                     <SortableContext items={lists.map((list) => list._id)} strategy={horizontalListSortingStrategy}>
                         {/* Render các List (cột) */}
