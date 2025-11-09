@@ -5,7 +5,7 @@ export default function ProjectProgressCard({ project }) {
     console.log('Rendering ProjectProgressCard with project:', project);
     return (
         <Link
-            to="/projects/{project._id}"
+            to={`/projects/${project.project_id}`}
             className="block p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-300"
         >
             <div className="flex justify-between items-center mb-1">
