@@ -52,7 +52,9 @@ export default function ProjectPage() {
     const handleListDeleted = (deletedListId) => {
         setLists((prevLists) => prevLists.filter((list) => list._id !== deletedListId));
     };
-
+    const handleListTitleUpdated = (listId, newTitle) => {
+        setLists((prevLists) => prevLists.map((list) => (list._id === listId ? { ...list, title: newTitle } : list)));
+    };
     //Xử lý kéo thả
     const handleDragStart = (event) => {
         const { active } = event;
@@ -108,7 +110,12 @@ export default function ProjectPage() {
                     <SortableContext items={lists.map((list) => list._id)} strategy={horizontalListSortingStrategy}>
                         {/* Render các List (cột) */}
                         {lists.map((list) => (
-                            <ListComponent key={list._id} list={list} onListDeleted={handleListDeleted} />
+                            <ListComponent
+                                key={list._id}
+                                list={list}
+                                onListDeleted={handleListDeleted}
+                                onListTitleUpdated={handleListTitleUpdated}
+                            />
                         ))}
                     </SortableContext>
                     {/* Component Thêm List Mới */}
