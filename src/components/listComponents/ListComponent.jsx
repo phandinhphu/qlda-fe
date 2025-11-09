@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import TaskCard from './TaskCard';
-// 1. Import service API
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { createTask, deleteTask, updateTask } from '../../services/taskServices';
 import { deleteList } from '../../services/listServices';
 import ListMenu from './ListMenu';
 const Icon = ({ name, className = '' }) => <span className={`material-icons ${className}`}>{name}</span>;
 
-export default function TaskComponent({ list, onListDeleted }) {
+export default function ListComponent({ list, onListDeleted }) {
     // Lấy tasks từ prop (list.tasks từ API sẽ là mảng các task)
     const [tasks, setTasks] = useState(list.tasks || []);
     const [showAddTaskForm, setShowAddTaskForm] = useState(false);
@@ -18,6 +19,13 @@ export default function TaskComponent({ list, onListDeleted }) {
         setShowAddTaskForm((prev) => !prev);
         setNewTaskTitle('');
     };
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: list._id });
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.4 : 1, // Làm mờ cột khi kéo
+    };
+
     useEffect(() => {
         if (!isMenuOpen) return; // Chỉ chạy khi menu đang mở
 
@@ -127,24 +135,25 @@ export default function TaskComponent({ list, onListDeleted }) {
 
     return (
         // Thẻ div bên ngoài (wrapper) cho phép co giãn
-        <div className="flex-shrink-0 w-[300px] relative">
-            {/* SỬA ĐỔI: Đổi nền cột thành xám nhạt (light mode) */}
+        <div ref={setNodeRef} style={style} className="flex-shrink-0 w-[300px] relative">
             <div className="flex flex-col max-h-full bg-gray-100 rounded-lg p-4 shadow-sm border border-gray-200">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-4 flex-shrink-0">
-                    {/* SỬA ĐỔI: Đổi màu chữ */}
-                    <h2 className="text-lg font-semibold text-gray-900">{list.title}</h2>
+                    <h2
+                        {...attributes}
+                        {...listeners}
+                        className="text-left text-lg font-semibold text-gray-900 cursor-grab w-full"
+                    >
+                        {list.title}
+                    </h2>
                     <button
                         ref={buttonRef}
                         onClick={() => setIsMenuOpen((prev) => !prev)}
-                        // SỬA ĐỔI: Nền trắng, hover xám, và thêm viền nhẹ
                         className="bg-gray-900/5 hover:bg-gray-900/10 text-gray-700 p-1 rounded-md transition-colors border border-gray-200 shadow-sm"
                     >
-                        <Icon name="more_horiz" /> {/* Thêm màu cho icon */}
+                        <Icon name="more_horiz" />
                     </button>
                 </div>
-
-                {/* Danh sách Task (cho phép cuộn) */}
                 <div className="flex-grow overflow-y-auto pr-1">
                     {tasks.map((task) => (
                         <TaskCard

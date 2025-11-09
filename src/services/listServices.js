@@ -56,3 +56,13 @@ export const deleteList = async (listId) => {
         }
     }
 };
+
+export const reorderLists = async (orderedListIds) => {
+    try {
+        const response = await httpRequest.put('/lists/reorder', { orderedListIds });
+        return response.data;
+    } catch (error) {
+        console.error('Error in reorderLists:', error);
+        throw new Error(error.response?.data?.message || 'Không thể cập nhật thứ tự.');
+    }
+};
