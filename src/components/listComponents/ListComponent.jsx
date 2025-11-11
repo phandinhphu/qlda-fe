@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import TaskCard from './TaskCard';
+import TaskModal from './TaskModal';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { createTask, deleteTask, updateTask } from '../../services/taskServices';
@@ -15,6 +16,8 @@ export default function ListComponent({ list, onListDeleted, onListTitleUpdated 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [newTitle, setNewTitle] = useState(list.title);
+    const [selectedTaskId, setSelectedTaskId] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const menuRef = useRef(null);
     const buttonRef = useRef(null);
     const titleInputRef = useRef(null);
@@ -88,8 +91,13 @@ export default function ListComponent({ list, onListDeleted, onListTitleUpdated 
     };
 
     const handleCardClick = (taskId) => {
-        console.log('Clicked task:', taskId);
-        // TODO: Mở modal chi tiết task
+        setSelectedTaskId(taskId);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedTaskId(null);
     };
 
     const onEditTask = async (taskId, editedTitle) => {
@@ -273,6 +281,9 @@ export default function ListComponent({ list, onListDeleted, onListTitleUpdated 
                     <ListMenu onDelete={handleDeleteList} onRename={handleRenameClick} />
                 </div>
             )}
+
+            {/* Task Modal */}
+            <TaskModal taskId={selectedTaskId} isOpen={isModalOpen} onClose={handleCloseModal} />
         </div>
     );
 }

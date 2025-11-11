@@ -70,6 +70,34 @@ export const addStep = async (taskId, stepData) => {
     }
 };
 
+export const getStepByTaskId = async (taskId) => {
+    try {
+        const response = await httpRequest.get(`/tasks/${taskId}/steps`);
+        return response.data;
+    } catch (error) {
+        console.error('Error in getStepByTaskId:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể tải các bước.');
+        }
+    }
+};
+
+export const toggleStep = async (stepId, taskId) => {
+    try {
+        const response = await httpRequest.patch(`/tasks/${taskId}/steps/${stepId}/toggle-completed`);
+        return response.data; // Trả về step đã cập nhật
+    } catch (error) {
+        console.error('Error in updateStep:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể cập nhật bước.');
+        }
+    }
+};
+
 export const addLabel = async (taskId, labelData) => {
     try {
         const response = await httpRequest.post(`/tasks/${taskId}/labels`, labelData);
