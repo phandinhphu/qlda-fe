@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
             await authServices.register(userData);
         } catch (error) {
             console.error('Registration error:', error);
-            throw new Error('Registration failed: ' + error.message);
+            throw new Error(error.message || 'Registration failed');
         }
     };
 
