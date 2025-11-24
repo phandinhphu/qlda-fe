@@ -1,7 +1,7 @@
 import Header from '../../components/HeaderComponents/Header';
 const DefaultLayout = ({ children }) => {
     return (
-        <div className="default-layout min-h-screen min-w-screen">
+        <div className="default-layout min-h-screen">
             <Header />
             {children}
         </div>
