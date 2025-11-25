@@ -32,3 +32,6 @@ globalThis.IntersectionObserver = class IntersectionObserver {
     }
     unobserve() {}
 };
+
+// Mock window.alert
+window.alert = vi.fn();
