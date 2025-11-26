@@ -3,6 +3,7 @@ import * as httpRequest from '../utils/httpRequest';
 export const getListsByProject = async (projectId) => {
     try {
         const response = await httpRequest.get(`/lists/${projectId}`);
+        console.log('getListsByProject response:', response);
         return response.data.data; // Trả về mảng các list đã được populate task
     } catch (error) {
         console.error('Error in getListsByProject:', error);
