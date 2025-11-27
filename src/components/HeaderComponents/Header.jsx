@@ -9,6 +9,7 @@ export default function Header() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [searchText, setSearchText] = useState('');
     const menuRef = useRef(null);
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -24,6 +25,16 @@ export default function Header() {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        const query = searchText.trim();
+        if (query.length === 0) {
+            navigate('/projects');
+        } else {
+            navigate(`/projects?q=${encodeURIComponent(query)}`);
+        }
+    };
 
     const handleLogout = async () => {
         setIsMenuOpen(false); // Đóng menu trước
@@ -48,16 +59,18 @@ export default function Header() {
             </div>
 
             {/* 2. Thanh tìm kiếm (Giữa) */}
-            <div className="relative w-1/3 max-w-lg">
+            <form onSubmit={handleSearchSubmit} className="relative w-1/3 max-w-lg">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                     <Icon name="search" className="text-gray-400" />
                 </span>
                 <input
                     type="text"
-                    placeholder="Search for anything..."
+                    placeholder="Tìm kiếm dự án theo tên..."
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
                     className="text-gray-400 w-full py-2.5 pl-10 pr-4 text-sm bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-            </div>
+            </form>
 
             {/* 3. Thông tin User (Bên phải) */}
             <div className="flex items-center space-x-4">

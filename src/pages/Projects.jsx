@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import ProjectList from '../components/projects/ProjectList';
 import ProjectModal from '../components/projects/ProjectModal';
 import ProjectForm from '../components/projects/ProjectForm';
@@ -17,6 +18,9 @@ const ProjectsPage = () => {
     const [selectedProject, setSelectedProject] = useState(null);
     const [isFormLoading, setIsFormLoading] = useState(false);
     const [toast, setToast] = useState(null);
+    const [error, setError] = useState(null);
+    const [searchParams] = useSearchParams();
+    const searchQuery = (searchParams.get('q') || '').trim().toLowerCase();
 
     // Fetch projects
     const fetchProjects = useCallback(async () => {
@@ -45,6 +49,10 @@ const ProjectsPage = () => {
             fetchProjects();
         }
     }, [fetchProjects, user]);
+
+    const visibleProjects = searchQuery
+        ? projects.filter((p) => p?.project_name?.toLowerCase().includes(searchQuery))
+        : projects;
 
     // Toast helper
     const showToast = (message, type = 'info') => {
@@ -129,7 +137,9 @@ const ProjectsPage = () => {
                     <div className="flex items-center justify-between">
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900">Quản lý Dự án</h1>
-                            <p className="mt-1 text-sm text-gray-500">Tổng số: {projects.length} dự án</p>
+                            <p className="mt-1 text-sm text-gray-500">
+                                {`Tổng số: ${visibleProjects.length}${searchQuery ? ` / ${projects.length}` : ''} dự án`}
+                            </p>
                         </div>
                         <button
                             onClick={handleOpenCreateModal}
@@ -147,7 +157,7 @@ const ProjectsPage = () => {
             {/* Content */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <ProjectList
-                    projects={projects}
+                    projects={visibleProjects}
                     isLoading={isLoading}
                     onEdit={handleOpenEditModal}
                     onDelete={handleOpenDeleteModal}
