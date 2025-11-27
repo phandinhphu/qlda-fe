@@ -3,9 +3,9 @@ import { API_URL } from './constants';
 
 const QLDARequest = axios.create({
     baseURL: API_URL ? `${API_URL}/api` : 'http://localhost:5000/api',
-    headers: {
-        'Content-Type': 'application/json',
-    },
+    // headers: {
+    //     'Content-Type': 'application/json',
+    // },
     withCredentials: true,
 });
 
