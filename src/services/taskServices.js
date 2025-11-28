@@ -125,3 +125,29 @@ export const addComment = async (taskId, commentData) => {
         }
     }
 };
+
+export const uploadTaskFile = async (taskId, file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const response = await httpRequest.post(`/tasks/${taskId}/uploads`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('lỗi ở taskService - uploadFile', error);
+    }
+};
+
+export const getTaskFiles = async (taskId) => {
+    try {
+        const respone = await httpRequest.get(`/tasks/${taskId}/files`);
+        return respone.data;
+    } catch (error) {
+        console.error('Lỗi getTaskFiles ở service', error);
+        return [];
+    }
+};
