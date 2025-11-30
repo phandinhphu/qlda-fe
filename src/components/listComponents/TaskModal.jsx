@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { getTaskById, uploadTaskFile } from '../../services/taskServices';
 import TaskModalHeader from './TaskModalHeader';
 import TaskModalDescription from './TaskModalDescription';
+import TaskModalLabels from './TaskModalLabels';
 import TaskModalSteps from './TaskModalSteps';
 import TaskModalComments from './TaskModalComments';
 import TaskModalSidebar from './TaskModalSidebar';
@@ -9,7 +10,7 @@ import TaskModalAttachments from './TaskModalAttachments';
 
 const Icon = ({ name, className = '' }) => <span className={`material-icons ${className}`}>{name}</span>;
 
-export default function TaskModal({ taskId, isOpen, onClose }) {
+export default function TaskModal({ taskId, isOpen, onClose, onLabelsChange }) {
     const [task, setTask] = useState(null);
     const [loading, setLoading] = useState(true);
     const fileInputRef = useRef(null);
@@ -159,6 +160,13 @@ export default function TaskModal({ taskId, isOpen, onClose }) {
                                 <div className="flex-1 space-y-4 max-h-[80vh] overflow-y-auto pr-2">
                                     {/* Description */}
                                     <TaskModalDescription task={task} onUpdate={handleTaskUpdate} />
+
+                                    {/* Labels */}
+                                    <TaskModalLabels
+                                        task={task}
+                                        onUpdate={handleTaskUpdate}
+                                        onLabelsChange={onLabelsChange}
+                                    />
 
                                     {/* Steps */}
                                     <TaskModalSteps task={task} onUpdate={handleTaskUpdate} />

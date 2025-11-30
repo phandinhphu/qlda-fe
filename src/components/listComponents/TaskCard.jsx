@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import TaskMenu from './TaskMenu';
 import TaskCheckbox from './TaskCheckBox';
 
-export default function TaskCard({ title, onClick, onEdit, onDelete, status, onToggleStatus }) {
+export default function TaskCard({ title, onClick, onEdit, onDelete, status, onToggleStatus, labels = [] }) {
     const [isEditing, setIsEditing] = useState(false);
     const [editedTitle, setEditedTitle] = useState(title);
     const inputRef = useRef(null);
@@ -56,6 +56,22 @@ export default function TaskCard({ title, onClick, onEdit, onDelete, status, onT
 
                 <TaskMenu onEdit={() => setIsEditing(true)} onDelete={onDelete} />
             </div>
+
+            {/* Hiển thị labels */}
+            {labels.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                    {labels.map((label) => (
+                        <span
+                            key={label._id}
+                            className="px-2 py-0.5 rounded text-xs font-medium text-white"
+                            style={{ backgroundColor: label.color }}
+                            title={label.label_name}
+                        >
+                            {label.label_name}
+                        </span>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

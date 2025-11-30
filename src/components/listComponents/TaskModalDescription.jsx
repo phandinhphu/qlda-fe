@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { updateTask } from '../../services/taskServices';
 
 const Icon = ({ name, className = '' }) => <span className={`material-icons ${className}`}>{name}</span>;
@@ -6,6 +6,11 @@ const Icon = ({ name, className = '' }) => <span className={`material-icons ${cl
 export default function TaskModalDescription({ task, onUpdate }) {
     const [isEditing, setIsEditing] = useState(false);
     const [description, setDescription] = useState(task.description || '');
+
+    // Đồng bộ state với prop khi task thay đổi
+    useEffect(() => {
+        setDescription(task?.description || '');
+    }, [task?._id, task?.description]);
 
     const handleSave = async () => {
         try {

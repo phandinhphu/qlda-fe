@@ -3,7 +3,7 @@ import TaskCard from './TaskCard';
 import TaskModal from './TaskModal';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { createTask, deleteTask, updateTask } from '../../services/taskServices';
+import { createTask, deleteTask, updateTask, getTaskLabels } from '../../services/taskServices';
 import { deleteList, updateList } from '../../services/listServices';
 import ListMenu from './ListMenu';
 const Icon = ({ name, className = '' }) => <span className={`material-icons ${className}`}>{name}</span>;
@@ -11,6 +11,7 @@ const Icon = ({ name, className = '' }) => <span className={`material-icons ${cl
 export default function ListComponent({ list, onListDeleted, onListTitleUpdated }) {
     // Lấy tasks từ prop (list.tasks từ API sẽ là mảng các task)
     const [tasks, setTasks] = useState(list.tasks || []);
+    const [taskLabels, setTaskLabels] = useState({}); // { taskId: [labels] }
     const [showAddTaskForm, setShowAddTaskForm] = useState(false);
     const [newTaskTitle, setNewTaskTitle] = useState('');
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -62,6 +63,41 @@ export default function ListComponent({ list, onListDeleted, onListTitleUpdated 
         }
     }, [isEditingTitle]);
 
+    // Fetch labels cho tất cả tasks
+    useEffect(() => {
+        const fetchAllLabels = async () => {
+            const labelsMap = {};
+            for (const task of tasks) {
+                try {
+                    const labels = await getTaskLabels(task._id);
+                    labelsMap[task._id] = labels || [];
+                } catch (error) {
+                    console.error(`Error fetching labels for task ${task._id}:`, error);
+                    labelsMap[task._id] = [];
+                }
+            }
+            setTaskLabels(labelsMap);
+        };
+
+        if (tasks.length > 0) {
+            fetchAllLabels();
+        }
+    }, [tasks]);
+
+    // Hàm refresh labels cho một task cụ thể
+    const refreshTaskLabels = async (taskId) => {
+        if (!taskId) return;
+        try {
+            const labels = await getTaskLabels(taskId);
+            setTaskLabels((prev) => ({
+                ...prev,
+                [taskId]: labels || [],
+            }));
+        } catch (error) {
+            console.error(`Error refreshing labels for task ${taskId}:`, error);
+        }
+    };
+
     // Cập nhật hàm handleAddTask
     const handleAddTask = async () => {
         if (newTaskTitle.trim() === '') return;
@@ -96,6 +132,10 @@ export default function ListComponent({ list, onListDeleted, onListTitleUpdated 
     };
 
     const handleCloseModal = () => {
+        // Refresh labels khi đóng modal để đảm bảo labels được cập nhật
+        if (selectedTaskId) {
+            refreshTaskLabels(selectedTaskId);
+        }
         setIsModalOpen(false);
         setSelectedTaskId(null);
     };
@@ -230,6 +270,7 @@ export default function ListComponent({ list, onListDeleted, onListTitleUpdated 
                             onDelete={() => onDeleteTask(task._id)}
                             status={task.status}
                             onToggleStatus={(newStatus) => handleToggleStatus(task._id, newStatus)}
+                            labels={taskLabels[task._id] || []}
                         />
                     ))}
 
@@ -283,7 +324,12 @@ export default function ListComponent({ list, onListDeleted, onListTitleUpdated 
             )}
 
             {/* Task Modal */}
-            <TaskModal taskId={selectedTaskId} isOpen={isModalOpen} onClose={handleCloseModal} />
+            <TaskModal
+                taskId={selectedTaskId}
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                onLabelsChange={refreshTaskLabels}
+            />
         </div>
     );
 }

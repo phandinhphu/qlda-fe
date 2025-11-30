@@ -112,6 +112,48 @@ export const addLabel = async (taskId, labelData) => {
     }
 };
 
+export const getTaskLabels = async (taskId) => {
+    try {
+        const response = await httpRequest.get(`/tasks/${taskId}/labels`);
+        return response.data.data; // Trả về danh sách labels
+    } catch (error) {
+        console.error('Error in getTaskLabels:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể tải danh sách nhãn.');
+        }
+    }
+};
+
+export const updateLabel = async (taskId, labelId, labelData) => {
+    try {
+        const response = await httpRequest.put(`/tasks/${taskId}/labels/${labelId}`, labelData);
+        return response.data.data; // Trả về label đã cập nhật
+    } catch (error) {
+        console.error('Error in updateLabel:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể cập nhật nhãn.');
+        }
+    }
+};
+
+export const deleteLabel = async (taskId, labelId) => {
+    try {
+        const response = await httpRequest.del(`/tasks/${taskId}/labels/${labelId}`);
+        return response.data; // Trả về kết quả xóa
+    } catch (error) {
+        console.error('Error in deleteLabel:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể xóa nhãn.');
+        }
+    }
+};
+
 export const addComment = async (taskId, commentData) => {
     try {
         const response = await httpRequest.post(`/tasks/${taskId}/comments`, commentData);
