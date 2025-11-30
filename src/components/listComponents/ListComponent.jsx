@@ -3,7 +3,7 @@ import TaskCard from './TaskCard';
 import TaskModal from './TaskModal';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { createTask, deleteTask, updateTask, getTaskLabels } from '../../services/taskServices';
+import { createTask, deleteTask, updateTask, getTaskLabels, getTaskMembers } from '../../services/taskServices';
 import { deleteList, updateList } from '../../services/listServices';
 import ListMenu from './ListMenu';
 const Icon = ({ name, className = '' }) => <span className={`material-icons ${className}`}>{name}</span>;
@@ -12,6 +12,7 @@ export default function ListComponent({ list, onListDeleted, onListTitleUpdated 
     // Lấy tasks từ prop (list.tasks từ API sẽ là mảng các task)
     const [tasks, setTasks] = useState(list.tasks || []);
     const [taskLabels, setTaskLabels] = useState({}); // { taskId: [labels] }
+    const [taskMembers, setTaskMembers] = useState({}); // { taskId: [members] }
     const [showAddTaskForm, setShowAddTaskForm] = useState(false);
     const [newTaskTitle, setNewTaskTitle] = useState('');
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -84,6 +85,27 @@ export default function ListComponent({ list, onListDeleted, onListTitleUpdated 
         }
     }, [tasks]);
 
+    // Fetch members cho tất cả tasks
+    useEffect(() => {
+        const fetchAllMembers = async () => {
+            const membersMap = {};
+            for (const task of tasks) {
+                try {
+                    const members = await getTaskMembers(task._id);
+                    membersMap[task._id] = members || [];
+                } catch (error) {
+                    console.error(`Error fetching members for task ${task._id}:`, error);
+                    membersMap[task._id] = [];
+                }
+            }
+            setTaskMembers(membersMap);
+        };
+
+        if (tasks.length > 0) {
+            fetchAllMembers();
+        }
+    }, [tasks]);
+
     // Hàm refresh labels cho một task cụ thể
     const refreshTaskLabels = async (taskId) => {
         if (!taskId) return;
@@ -95,6 +117,20 @@ export default function ListComponent({ list, onListDeleted, onListTitleUpdated 
             }));
         } catch (error) {
             console.error(`Error refreshing labels for task ${taskId}:`, error);
+        }
+    };
+
+    // Hàm refresh members cho một task cụ thể
+    const refreshTaskMembers = async (taskId) => {
+        if (!taskId) return;
+        try {
+            const members = await getTaskMembers(taskId);
+            setTaskMembers((prev) => ({
+                ...prev,
+                [taskId]: members || [],
+            }));
+        } catch (error) {
+            console.error(`Error refreshing members for task ${taskId}:`, error);
         }
     };
 
@@ -132,9 +168,10 @@ export default function ListComponent({ list, onListDeleted, onListTitleUpdated 
     };
 
     const handleCloseModal = () => {
-        // Refresh labels khi đóng modal để đảm bảo labels được cập nhật
+        // Refresh labels và members khi đóng modal để đảm bảo được cập nhật
         if (selectedTaskId) {
             refreshTaskLabels(selectedTaskId);
+            refreshTaskMembers(selectedTaskId);
         }
         setIsModalOpen(false);
         setSelectedTaskId(null);
@@ -271,6 +308,7 @@ export default function ListComponent({ list, onListDeleted, onListTitleUpdated 
                             status={task.status}
                             onToggleStatus={(newStatus) => handleToggleStatus(task._id, newStatus)}
                             labels={taskLabels[task._id] || []}
+                            members={taskMembers[task._id] || []}
                         />
                     ))}
 
@@ -329,6 +367,7 @@ export default function ListComponent({ list, onListDeleted, onListTitleUpdated 
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
                 onLabelsChange={refreshTaskLabels}
+                onMembersChange={refreshTaskMembers}
             />
         </div>
     );

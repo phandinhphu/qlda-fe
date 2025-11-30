@@ -154,6 +154,48 @@ export const deleteLabel = async (taskId, labelId) => {
     }
 };
 
+export const getTaskMembers = async (taskId) => {
+    try {
+        const response = await httpRequest.get(`/tasks/${taskId}/members`);
+        return response.data.data; // Trả về danh sách thành viên
+    } catch (error) {
+        console.error('Error in getTaskMembers:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể tải danh sách thành viên.');
+        }
+    }
+};
+
+export const addTaskMember = async (taskId, userId) => {
+    try {
+        const response = await httpRequest.post(`/tasks/${taskId}/members`, { userId });
+        return response.data.data; // Trả về thành viên vừa thêm
+    } catch (error) {
+        console.error('Error in addTaskMember:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể gán thành viên.');
+        }
+    }
+};
+
+export const removeTaskMember = async (taskId, userId) => {
+    try {
+        const response = await httpRequest.del(`/tasks/${taskId}/members/${userId}`);
+        return response.data; // Trả về kết quả xóa
+    } catch (error) {
+        console.error('Error in removeTaskMember:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể xóa thành viên.');
+        }
+    }
+};
+
 export const addComment = async (taskId, commentData) => {
     try {
         const response = await httpRequest.post(`/tasks/${taskId}/comments`, commentData);

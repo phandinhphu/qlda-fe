@@ -3,6 +3,7 @@ import { getTaskById, uploadTaskFile } from '../../services/taskServices';
 import TaskModalHeader from './TaskModalHeader';
 import TaskModalDescription from './TaskModalDescription';
 import TaskModalLabels from './TaskModalLabels';
+import TaskModalMembers from './TaskModalMembers';
 import TaskModalSteps from './TaskModalSteps';
 import TaskModalComments from './TaskModalComments';
 import TaskModalSidebar from './TaskModalSidebar';
@@ -10,7 +11,7 @@ import TaskModalAttachments from './TaskModalAttachments';
 
 const Icon = ({ name, className = '' }) => <span className={`material-icons ${className}`}>{name}</span>;
 
-export default function TaskModal({ taskId, isOpen, onClose, onLabelsChange }) {
+export default function TaskModal({ taskId, isOpen, onClose, onLabelsChange, onMembersChange }) {
     const [task, setTask] = useState(null);
     const [loading, setLoading] = useState(true);
     const fileInputRef = useRef(null);
@@ -166,6 +167,13 @@ export default function TaskModal({ taskId, isOpen, onClose, onLabelsChange }) {
                                         task={task}
                                         onUpdate={handleTaskUpdate}
                                         onLabelsChange={onLabelsChange}
+                                    />
+
+                                    {/* Members */}
+                                    <TaskModalMembers
+                                        task={task}
+                                        onUpdate={handleTaskUpdate}
+                                        onMembersChange={onMembersChange}
                                     />
 
                                     {/* Steps */}

@@ -2,7 +2,16 @@ import { useState, useRef, useEffect } from 'react';
 import TaskMenu from './TaskMenu';
 import TaskCheckbox from './TaskCheckBox';
 
-export default function TaskCard({ title, onClick, onEdit, onDelete, status, onToggleStatus, labels = [] }) {
+export default function TaskCard({
+    title,
+    onClick,
+    onEdit,
+    onDelete,
+    status,
+    onToggleStatus,
+    labels = [],
+    members = [],
+}) {
     const [isEditing, setIsEditing] = useState(false);
     const [editedTitle, setEditedTitle] = useState(title);
     const inputRef = useRef(null);
@@ -70,6 +79,36 @@ export default function TaskCard({ title, onClick, onEdit, onDelete, status, onT
                             {label.label_name}
                         </span>
                     ))}
+                </div>
+            )}
+
+            {/* Hiển thị members */}
+            {members.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                    {members.map((member) => {
+                        const avatarUrl =
+                            member.avatar_url ||
+                            member.avatar ||
+                            `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name || 'U')}&background=random`;
+                        const memberName = member.name || member.email || 'Unknown';
+                        return (
+                            <div key={member._id} className="relative group">
+                                <img
+                                    src={avatarUrl}
+                                    alt={memberName}
+                                    className="w-6 h-6 rounded-full object-cover border-2 border-white shadow-sm cursor-pointer hover:scale-110 transition-transform"
+                                    title={memberName}
+                                />
+                                {/* Tooltip */}
+                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                    {memberName}
+                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
+                                        <div className="border-4 border-transparent border-t-gray-900"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             )}
         </div>
