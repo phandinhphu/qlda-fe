@@ -17,7 +17,9 @@ import {
     DragOverlay,
 } from '@dnd-kit/core';
 import { SortableContext, arrayMove, horizontalListSortingStrategy } from '@dnd-kit/sortable';
+import { Link } from 'react-router-dom';
 const Icon = ({ name, className = '' }) => <span className={`material-icons ${className}`}>{name}</span>;
+
 export default function ProjectPage() {
     const { projectId } = useParams();
     const [lists, setLists] = useState([]); // State này là một MẢNG (array)
@@ -230,6 +232,15 @@ export default function ProjectPage() {
                     </div>
                     <div className="ml-auto">
                         <ShareButton projectId={project._id} />
+                    </div>
+                    <div className="flex items-center space-x-4">
+                        {/* Nút chat */}
+                        <Link
+                            to={`/chat/project/${project._id}`}
+                            className="text-gray-400 hover:text-gray-900 hover:border-none relative bg-white focus:border-none focus:bg-gray-100 transition-colors p-2 rounded-lg"
+                        >
+                            <Icon name="chat" className="text-2xl" />
+                        </Link>
                     </div>
                 </header>
                 <main className="flex-grow flex p-4 overflow-x-auto space-x-4 min-h-0">
