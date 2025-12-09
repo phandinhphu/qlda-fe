@@ -3,6 +3,7 @@ import * as httpRequest from '../utils/httpRequest';
 export const getListsByProject = async (projectId) => {
     try {
         const response = await httpRequest.get(`/lists/${projectId}`);
+        console.log('getListsByProject response:', response);
         return response.data.data; // Trả về mảng các list đã được populate task
     } catch (error) {
         console.error('Error in getListsByProject:', error);
@@ -64,5 +65,19 @@ export const reorderLists = async (orderedListIds) => {
     } catch (error) {
         console.error('Error in reorderLists:', error);
         throw new Error(error.response?.data?.message || 'Không thể cập nhật thứ tự.');
+    }
+};
+
+export const getListById = async (listId) => {
+    try {
+        const response = await httpRequest.get(`/lists/detail/${listId}`);
+        return response.data.data || response.data;
+    } catch (error) {
+        console.error('Error in getListById:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể tải thông tin danh sách.');
+        }
     }
 };

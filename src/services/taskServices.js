@@ -70,6 +70,34 @@ export const addStep = async (taskId, stepData) => {
     }
 };
 
+export const getStepByTaskId = async (taskId) => {
+    try {
+        const response = await httpRequest.get(`/tasks/${taskId}/steps`);
+        return response.data;
+    } catch (error) {
+        console.error('Error in getStepByTaskId:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể tải các bước.');
+        }
+    }
+};
+
+export const toggleStep = async (stepId, taskId) => {
+    try {
+        const response = await httpRequest.patch(`/tasks/${taskId}/steps/${stepId}/toggle-completed`);
+        return response.data; // Trả về step đã cập nhật
+    } catch (error) {
+        console.error('Error in updateStep:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể cập nhật bước.');
+        }
+    }
+};
+
 export const addLabel = async (taskId, labelData) => {
     try {
         const response = await httpRequest.post(`/tasks/${taskId}/labels`, labelData);
@@ -80,6 +108,90 @@ export const addLabel = async (taskId, labelData) => {
             throw new Error(error.response.data.message);
         } else {
             throw new Error('Không thể thêm nhãn mới.');
+        }
+    }
+};
+
+export const getTaskLabels = async (taskId) => {
+    try {
+        const response = await httpRequest.get(`/tasks/${taskId}/labels`);
+        return response.data.data; // Trả về danh sách labels
+    } catch (error) {
+        console.error('Error in getTaskLabels:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể tải danh sách nhãn.');
+        }
+    }
+};
+
+export const updateLabel = async (taskId, labelId, labelData) => {
+    try {
+        const response = await httpRequest.put(`/tasks/${taskId}/labels/${labelId}`, labelData);
+        return response.data.data; // Trả về label đã cập nhật
+    } catch (error) {
+        console.error('Error in updateLabel:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể cập nhật nhãn.');
+        }
+    }
+};
+
+export const deleteLabel = async (taskId, labelId) => {
+    try {
+        const response = await httpRequest.del(`/tasks/${taskId}/labels/${labelId}`);
+        return response.data; // Trả về kết quả xóa
+    } catch (error) {
+        console.error('Error in deleteLabel:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể xóa nhãn.');
+        }
+    }
+};
+
+export const getTaskMembers = async (taskId) => {
+    try {
+        const response = await httpRequest.get(`/tasks/${taskId}/members`);
+        return response.data.data; // Trả về danh sách thành viên
+    } catch (error) {
+        console.error('Error in getTaskMembers:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể tải danh sách thành viên.');
+        }
+    }
+};
+
+export const addTaskMember = async (taskId, userId) => {
+    try {
+        const response = await httpRequest.post(`/tasks/${taskId}/members`, { userId });
+        return response.data.data; // Trả về thành viên vừa thêm
+    } catch (error) {
+        console.error('Error in addTaskMember:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể gán thành viên.');
+        }
+    }
+};
+
+export const removeTaskMember = async (taskId, userId) => {
+    try {
+        const response = await httpRequest.del(`/tasks/${taskId}/members/${userId}`);
+        return response.data; // Trả về kết quả xóa
+    } catch (error) {
+        console.error('Error in removeTaskMember:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể xóa thành viên.');
         }
     }
 };
@@ -95,5 +207,31 @@ export const addComment = async (taskId, commentData) => {
         } else {
             throw new Error('Không thể gửi bình luận.');
         }
+    }
+};
+
+export const uploadTaskFile = async (taskId, file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const response = await httpRequest.post(`/tasks/${taskId}/uploads`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('lỗi ở taskService - uploadFile', error);
+    }
+};
+
+export const getTaskFiles = async (taskId) => {
+    try {
+        const respone = await httpRequest.get(`/tasks/${taskId}/files`);
+        return respone.data;
+    } catch (error) {
+        console.error('Lỗi getTaskFiles ở service', error);
+        return [];
     }
 };
