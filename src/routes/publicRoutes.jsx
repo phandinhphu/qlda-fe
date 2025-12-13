@@ -9,6 +9,8 @@ const ProjectPage = lazy(() => import('../pages/Project'));
 const ProfilePage = lazy(() => import('../pages/Profile'));
 const ResetPasswordPage = lazy(() => import('../pages/ResetPassword'));
 const ForgotPasswordPage = lazy(() => import('../pages/ForgotPassword'));
+const ChatPage = lazy(() => import('../pages/Chat'));
+
 const publicRoutes = [
     { path: '/login', component: LoginPage, layout: null, requiresAuth: false },
     { path: '/register', component: RegisterPage, layout: null, requiresAuth: false },
@@ -16,6 +18,7 @@ const publicRoutes = [
     { path: '/projects', component: ProjectsPage, layout: DefaultLayout, requiresAuth: true },
     { path: '/profile', component: ProfilePage, layout: DefaultLayout, requiresAuth: true },
     { path: '/projects/:projectId', component: ProjectPage, layout: null, requiresAuth: true },
+    { path: '/chat/project/:projectId', component: ChatPage, layout: DefaultLayout, requiresAuth: true },
     { path: '/reset-password/:token', component: ResetPasswordPage, layout: null, requiresAuth: false },
     { path: '/forgot-password', component: ForgotPasswordPage, layout: null, requiresAuth: false },
 ];
