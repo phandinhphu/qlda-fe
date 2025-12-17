@@ -210,6 +210,48 @@ export const addComment = async (taskId, commentData) => {
     }
 };
 
+export const getComments = async (taskId) => {
+    try {
+        const response = await httpRequest.get(`/tasks/${taskId}/comments`);
+        return response.data.data; // Trả về danh sách comments
+    } catch (error) {
+        console.error('Error in getComments:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể tải danh sách bình luận.');
+        }
+    }
+};
+
+export const updateComment = async (taskId, commentId, commentData) => {
+    try {
+        const response = await httpRequest.put(`/tasks/${taskId}/comments/${commentId}`, commentData);
+        return response.data.data; // Trả về comment đã cập nhật
+    } catch (error) {
+        console.error('Error in updateComment:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể cập nhật bình luận.');
+        }
+    }
+};
+
+export const deleteComment = async (taskId, commentId) => {
+    try {
+        const response = await httpRequest.del(`/tasks/${taskId}/comments/${commentId}`);
+        return response.data; // Trả về kết quả xóa
+    } catch (error) {
+        console.error('Error in deleteComment:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể xóa bình luận.');
+        }
+    }
+};
+
 export const uploadTaskFile = async (taskId, file) => {
     const formData = new FormData();
     formData.append('file', file);
