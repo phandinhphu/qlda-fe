@@ -28,6 +28,33 @@ export const createTask = async (taskData) => {
     }
 };
 
+export const getAllTask = async (project_id) => {
+    try {
+        const response = await httpRequest.get(`/tasks/project/${project_id}`);
+        return response.data; // Trả về danh sách task
+    } catch (error) {
+        console.error('Error in getAllTask:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể tải danh sách công việc.');
+        }
+    }
+};
+
+export const setDueDate = async (taskId, due_date) => {
+    try {
+        const response = await httpRequest.patch(`/tasks/${taskId}/due-date`, { due_date });
+        return response.data; // Trả về task đã cập nhật
+    } catch (error) {
+        console.error('Error in setDueDate:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể đặt ngày hết hạn.');
+        }
+    }
+};
 /**
  * @desc Cập nhật một Task (thẻ)
  * @param {string} taskId ID của Task

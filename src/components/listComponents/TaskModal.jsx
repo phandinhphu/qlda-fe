@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { getTaskById, uploadTaskFile } from '../../services/taskServices';
+import { setDueDate, getTaskById, uploadTaskFile } from '../../services/taskServices';
 import TaskModalHeader from './TaskModalHeader';
 import TaskModalDescription from './TaskModalDescription';
 import TaskModalLabels from './TaskModalLabels';
@@ -8,26 +8,47 @@ import TaskModalSteps from './TaskModalSteps';
 import TaskModalComments from './TaskModalComments';
 import TaskModalSidebar from './TaskModalSidebar';
 import TaskModalAttachments from './TaskModalAttachments';
-
+import Toast from '../../components/Toast';
+import { format } from 'date-fns';
+import { vi } from 'date-fns/locale';
+import Calendar from '../common/Calendar';
 const Icon = ({ name, className = '' }) => <span className={`material-icons ${className}`}>{name}</span>;
 
 export default function TaskModal({ taskId, isOpen, onClose, onLabelsChange, onMembersChange }) {
     const [task, setTask] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [date, setDate] = useState(new Date());
+    const [showCalendar, setShowCalendar] = useState(false);
     const fileInputRef = useRef(null);
     const [newUploadedFile, setNewUploadedFile] = useState(null);
-
+    const calendarRef = useRef(null);
     const loadTaskDetail = async () => {
         try {
             setLoading(true);
             const data = await getTaskById(taskId);
             setTask(data);
+            setDate(data.due_date ? new Date(data.due_date) : null);
         } catch (error) {
             console.error('Error loading task:', error);
         } finally {
             setLoading(false);
         }
     };
+
+    //LOGIC ĐÓNG LỊCH KHI CLICK RA NGOÀI
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+                setShowCalendar(false);
+            }
+        };
+        if (showCalendar) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showCalendar]);
 
     useEffect(() => {
         if (isOpen && taskId) {
@@ -44,6 +65,30 @@ export default function TaskModal({ taskId, isOpen, onClose, onLabelsChange, onM
 
     const handleAttachClick = () => {
         fileInputRef.current.click(); // mở hộp thoại chọn file
+    };
+
+    const handleSelectDueDate = async (selectedDate) => {
+        if (selectedDate) {
+            setDate(selectedDate);
+            setShowCalendar(false);
+
+            try {
+                await setDueDate(taskId, selectedDate);
+                console.log('Cập nhật ngày thành công');
+            } catch (error) {
+                console.error(error);
+                // Nếu lỗi, có thể cân nhắc set lại ngày cũ ở đây
+                setToast({
+                    message: error.message || 'Lỗi cập nhật ngày!',
+                    type: 'error',
+                });
+            }
+        } else {
+            setToast({
+                message: 'Ngày không hợp lệ!',
+                type: 'error',
+            });
+        }
     };
 
     const handleFileSelected = async (e) => {
@@ -139,10 +184,34 @@ export default function TaskModal({ taskId, isOpen, onClose, onLabelsChange, onM
                                     <Icon name="label" className="text-base" />
                                     <span>Nhãn</span>
                                 </button>
-                                <button className="flex items-center gap-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-1.5 rounded text-sm transition-colors">
-                                    <Icon name="event" className="text-base" />
-                                    <span>Ngày</span>
-                                </button>
+                                <div className="relative inline-block" ref={calendarRef}>
+                                    <button
+                                        className={`flex items-center gap-1 px-3 py-1.5 rounded text-sm transition-colors ${
+                                            date
+                                                ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' // Style khi ĐÃ có ngày
+                                                : 'bg-gray-300 hover:bg-gray-400 text-gray-800' // Style khi CHƯA có ngày
+                                        }`}
+                                        onClick={() => setShowCalendar(!showCalendar)}
+                                    >
+                                        <Icon name="event" className="text-base" />
+
+                                        {/* 4. HIỂN THỊ NGÀY ĐÃ CHỌN */}
+                                        <span>
+                                            {date ? format(date, 'dd/MM/yyyy', { locale: vi }) : 'Ngày đến hạn'}
+                                        </span>
+                                    </button>
+
+                                    {showCalendar && (
+                                        // Style dropdown lịch
+                                        <div className="absolute top-full left-0 mt-2 z-50 bg-white shadow-xl rounded-lg border border-gray-200">
+                                            <Calendar
+                                                selected={date}
+                                                onSelect={handleSelectDueDate}
+                                                // Thêm mode="single" nếu Calendar của bạn cần prop này
+                                            />
+                                        </div>
+                                    )}
+                                </div>
                                 <button className="flex items-center gap-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-1.5 rounded text-sm transition-colors">
                                     <Icon name="checklist" className="text-base" />
                                     <span>Việc cần làm</span>
