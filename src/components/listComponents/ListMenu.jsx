@@ -11,14 +11,10 @@ export default function ListMenu({ onDelete, onRename }) {
     };
 
     return (
-        // SỬA ĐỔI: Đổi nền, chữ, và viền
         <div className="absolute top-12 right-4 w-60 bg-white text-gray-700 rounded-lg shadow-xl z-10 p-2 border border-gray-200">
             {' '}
             <ul className="space-y-1">
-                <li
-                    onClick={onRename} // Gọi hàm từ component cha
-                    className="flex items-center p-2 rounded-md hover:bg-gray-100 cursor-pointer"
-                >
+                <li onClick={onRename} className="flex items-center p-2 rounded-md hover:bg-gray-100 cursor-pointer">
                     <Icon name="edit" className="mr-2 text-lg" />
                     <span>Đổi tên danh sách...</span>
                 </li>

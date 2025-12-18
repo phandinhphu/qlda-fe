@@ -314,7 +314,6 @@ export default function ListComponent({ list, onListDeleted, onListTitleUpdated 
 
                     {/* Form thêm task */}
                     {showAddTaskForm && (
-                        // SỬA ĐỔI: Nền form
                         <div className="bg-white rounded-lg p-2.5 shadow-sm mt-2 border border-gray-200">
                             <textarea
                                 // SỬA ĐỔI: Nền, chữ, viền
@@ -356,7 +355,6 @@ export default function ListComponent({ list, onListDeleted, onListTitleUpdated 
             </div>
             {isMenuOpen && (
                 <div ref={menuRef}>
-                    {/* ⚠️ LƯU Ý: Bạn sẽ cần sửa file ListMenu.jsx sang light mode */}
                     <ListMenu onDelete={handleDeleteList} onRename={handleRenameClick} />
                 </div>
             )}
