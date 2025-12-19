@@ -46,63 +46,77 @@ export default function Header() {
         }
     };
     return (
-        <header className="flex items-center justify-between w-full px-6 py-3 bg-white border-b border-gray-200">
-            {/* 1. Logo (Bên trái) */}
-            <div className="flex items-center">
-                {/* Bạn có thể thay SVG này bằng logo .png của mình */}
-                <svg className="w-8 h-8 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9.17 15H11v4.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2V4.1c1.89.96 3.13 3.01 3.13 5.4 0 2.7-1.4 5.01-3.47 6.39z" />
-                </svg>
-                <Link to="/projects" className="flex items-center ml-2 text-decoration-none">
-                    <span className="ml-2 text-xl font-bold text-gray-800">QLDuAn</span>
+        <header className="flex items-center justify-between w-full px-6 h-22 bg-white border-b border-gray-200 sticky top-0 z-40">
+            {/* 1. Logo (Left) */}
+            <div className="flex items-center gap-3 w-64">
+                <div className="bg-blue-600 rounded-lg p-1.5 shadow-sm text-white">
+                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9.17 15H11v4.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2V4.1c1.89.96 3.13 3.01 3.13 5.4 0 2.7-1.4 5.01-3.47 6.39z" />
+                    </svg>
+                </div>
+                <Link to="/projects" className="flex items-center text-decoration-none">
+                    <span className="text-xl font-bold text-gray-800 tracking-tight">QLDuAn</span>
                 </Link>
             </div>
 
-            {/* 2. Thanh tìm kiếm (Giữa) */}
-            <form onSubmit={handleSearchSubmit} className="relative w-1/3 max-w-lg">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                    <Icon name="search" className="text-gray-400" />
-                </span>
-                <input
-                    type="text"
-                    placeholder="Tìm kiếm dự án theo tên..."
-                    value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
-                    className="text-gray-400 w-full py-2.5 pl-10 pr-4 text-sm bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-            </form>
+            {/* 2. Search Bar (Center) */}
+            <div className="flex-1 max-w-2xl px-4">
+                <form onSubmit={handleSearchSubmit} className="relative w-full group">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <Icon
+                            name="search"
+                            className="text-gray-400 group-focus-within:text-blue-500 transition-colors"
+                        />
+                    </span>
+                    <input
+                        type="text"
+                        placeholder="Tìm kiếm dự án..."
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                        className="w-full py-2 pl-10 pr-4 text-sm bg-gray-100 border-transparent text-gray-700 rounded-lg focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 shadow-sm"
+                    />
+                </form>
+            </div>
 
-            {/* 3. Thông tin User (Bên phải) */}
-            <div className="flex items-center space-x-4">
-                {/* Nút chuông thông báo */}
-                <button className="text-gray-400 hover:text-gray-900 hover:border-none relative bg-white focus:border-none focus:bg-gray-100 transition-colors">
-                    <Icon name="notifications" className="text-2xl" />
-                    {/* (Tùy chọn) Chấm đỏ thông báo mới */}
-                    <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+            {/* 3. User & Actions (Right) */}
+            <div className="flex items-center justify-end gap-3 w-64">
+                {/* Notification Button */}
+                <button className="relative w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">
+                    <Icon name="notifications" className="text-xl" />
+                    <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
                 </button>
 
-                {/* Khối thông tin User */}
+                {/* Divider */}
+                <div className="h-8 w-px bg-gray-200 mx-1"></div>
+
+                {/* User Menu Trigger */}
                 <div className="relative" ref={menuRef}>
-                    {/* Đổi khối avatar thành 'button' để có thể click */}
                     <button
-                        onClick={() => setIsMenuOpen((prev) => !prev)} // Toggle menu
-                        className="flex items-center space-x-3 cursor-pointer bg-white hover:bg-gray-100 hover:border-0 p-2 rounded-lg transition-colors focus:bg-gray-200 focus:outline-none"
+                        onClick={() => setIsMenuOpen((prev) => !prev)}
+                        className={`flex items-center gap-2 p-1 pl-3 pr-2 rounded-full transition-all border shadow-sm ${
+                            isMenuOpen
+                                ? 'bg-white border-blue-200 ring-2 ring-blue-50'
+                                : 'bg-white border-gray-200 hover:bg-gray-50'
+                        }`}
                     >
-                        {/* Tên và Địa điểm */}
-                        <div className="text-right">
-                            <div className="text-sm font-semibold text-black">{user.name}</div>
-                            <div className="text-xs text-gray-500">{user.location}</div>
-                        </div>
-                        {/* Avatar */}
+                        <div className="text-sm font-semibold text-gray-700 hidden md:block">{user.name}</div>
                         <img
-                            className="w-10 h-10 rounded-full object-cover"
+                            className="w-8 h-8 rounded-full object-cover border border-gray-100"
                             src={user.avatar_url || 'https://i.pravatar.cc/150?u=user'}
-                            alt="User Avatar"
+                            alt="avatar"
+                        />
+                        <Icon
+                            name="expand_more"
+                            className={`text-gray-400 text-lg transition-transform duration-200 ${isMenuOpen ? 'rotate-180' : ''}`}
                         />
                     </button>
 
-                    {/* 7. Render menu nếu 'isMenuOpen' là true */}
-                    {isMenuOpen && <DropdownMenu onLogout={handleLogout} />}
+                    {/* Dropdown Menu */}
+                    {isMenuOpen && (
+                        <div className="absolute top-full right-0 mt-1 w-56 z-50 animate-slide-up-fade origin-top-right">
+                            <DropdownMenu onLogout={handleLogout} />
+                        </div>
+                    )}
                 </div>
             </div>
         </header>

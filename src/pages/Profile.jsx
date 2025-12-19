@@ -23,7 +23,7 @@ export default function ProfilePage() {
     const [userProjects, setUserProjects] = useState([]); //project user tạo
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [showCompleted, setShowCompleted] = useState(true);
+    const [showCompleted, setShowCompleted] = useState(false);
     const [projectsWithStats, setProjectsWithStats] = useState([]); //project user tham gia
 
     const { incompleteProjects, completedProjects } = useMemo(() => {
