@@ -23,31 +23,37 @@ const localizer = dateFnsLocalizer({
 
 const DnDCalendar = withDragAndDrop(Calendar);
 
-export default function TaskCalendar({ tasks, onTaskUpdated }) {
+export default function TaskCalendar({ tasks, lists, onTaskUpdated }) {
     // State quản lý ngày và view (để nút bấm hoạt động)
     const [date, setDate] = useState(new Date());
     const [view, setView] = useState('month');
     const [toast, setToast] = useState(null);
-    // Chuyển đổi dữ liệu
+
+    // Chuyển đổi dữ liệu và map thêm tên List
     const events = useMemo(() => {
         return tasks
-            .map((task) => {
+            .map((task, index) => {
                 if (!task.due_date && !task.start_date) return null;
                 const startDate = task.start_date ? new Date(task.start_date) : new Date(task.due_date);
                 const endDate = task.due_date ? new Date(task.due_date) : startDate;
 
                 if (!isValid(startDate) || !isValid(endDate)) return null;
 
+                // Tìm tên List
+                const listId = typeof task.list_id === 'object' ? task.list_id?._id : task.list_id;
+                const listName = lists?.find((l) => l._id === listId)?.title || 'Chưa phân loại';
+
                 return {
                     id: task._id,
                     title: task.title,
+                    listName: listName,
                     start: startDate,
                     end: endDate,
                     resource: task,
                 };
             })
             .filter(Boolean);
-    }, [tasks]);
+    }, [tasks, lists]);
 
     const handleNavigate = (newDate) => setDate(newDate);
     const handleViewChange = (newView) => setView(newView);
@@ -64,9 +70,31 @@ export default function TaskCalendar({ tasks, onTaskUpdated }) {
         }
     };
 
+    // Custom Event Component
+    const CustomEvent = ({ event }) => (
+        <div className="flex flex-col">
+            <span className="font-semibold text-sm leading-tight">{event.title}</span>
+            <span className="text-[10px] opacity-90 mt-0.5 truncate bg-black/10 w-fit px-1 rounded">
+                {event.listName}
+            </span>
+        </div>
+    );
+
     return (
-        <div className="h-[600px] bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+        <div className="h-[650px] bg-white p-4 rounded-xl shadow-sm border border-gray-200">
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+            <style>{`
+                .rbc-calendar { font-family: 'Inter', sans-serif; }
+                .rbc-toolbar-label { font-size: 1.25rem !important; font-weight: 700 !important; color: #1F2937; text-transform: capitalize; }
+                .rbc-header { padding: 12px 0 !important; font-weight: 600 !important; color: #4B5563; font-size: 0.9rem; }
+                .rbc-month-view { border-radius: 12px; overflow: hidden; border: 1px solid #E5E7EB; }
+                .rbc-day-bg + .rbc-day-bg { border-left: 1px solid #E5E7EB; }
+                .rbc-month-row + .rbc-month-row { border-top: 1px solid #E5E7EB; }
+                .rbc-event { border-radius: 6px !important; box-shadow: 0 1px 2px rgba(0,0,0,0.1); cursor: grab !important; }
+                .rbc-event:active { cursor: grabbing !important; }
+                .rbc-today { background-color: #F3F4F6 !important; }
+                .rbc-off-range-bg { background-color: #F9FAFB !important; }
+            `}</style>
             <DnDCalendar
                 localizer={localizer}
                 date={date}
@@ -82,15 +110,16 @@ export default function TaskCalendar({ tasks, onTaskUpdated }) {
                 endAccessor="end"
                 style={{ height: '100%' }}
                 culture="vi"
+                components={{
+                    event: CustomEvent,
+                }}
                 eventPropGetter={(event) => {
                     const isDone = event.resource.status === 'done';
                     return {
                         style: {
                             backgroundColor: isDone ? '#10B981' : '#3B82F6',
-                            borderRadius: '4px',
-                            opacity: 0.9,
-                            color: 'white',
                             border: 'none',
+                            color: 'white',
                             display: 'block',
                         },
                     };

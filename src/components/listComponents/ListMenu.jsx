@@ -11,7 +11,7 @@ export default function ListMenu({ onDelete, onRename }) {
     };
 
     return (
-        <div className="absolute top-12 right-4 w-60 bg-white text-gray-700 rounded-lg shadow-xl z-10 p-2 border border-gray-200">
+        <div className="w-60 bg-white text-gray-700 rounded-lg shadow-xl border border-gray-200 p-2">
             {' '}
             <ul className="space-y-1">
                 <li onClick={onRename} className="flex items-center p-2 rounded-md hover:bg-gray-100 cursor-pointer">

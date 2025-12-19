@@ -23,7 +23,7 @@ export default function ProfilePage() {
     const [userProjects, setUserProjects] = useState([]); //project user tạo
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [showCompleted, setShowCompleted] = useState(false);
+    const [showCompleted, setShowCompleted] = useState(true);
     const [projectsWithStats, setProjectsWithStats] = useState([]); //project user tham gia
 
     const { incompleteProjects, completedProjects } = useMemo(() => {
@@ -169,7 +169,7 @@ export default function ProfilePage() {
                                         {completedProjects.length > 0 && (
                                             <button
                                                 onClick={() => setShowCompleted((prev) => !prev)}
-                                                className="bg-gray-900/5 hover:bg-gray-900/10 text-gray-700 rounded-xl transition-colors"
+                                                className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm rounded-lg py-2 px-4 transition-colors font-medium text-sm w-full"
                                             >
                                                 {showCompleted ? 'Ẩn' : 'Hiển thị'} {completedProjects.length} dự án đã
                                                 hoàn thành
