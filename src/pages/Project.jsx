@@ -68,7 +68,6 @@ export default function ProjectPage() {
                 return matchListName || hasMatchingTask;
             });
 
-            // Xử lý riêng cho filterType === 'member': Lọc sâu vào từng task
             if (filterType === 'member') {
                 result = result
                     .map((list) => {
