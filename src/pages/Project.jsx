@@ -67,6 +67,19 @@ export default function ProjectPage() {
                 }
                 return matchListName || hasMatchingTask;
             });
+
+            // Xử lý riêng cho filterType === 'member': Lọc sâu vào từng task
+            if (filterType === 'member') {
+                result = result
+                    .map((list) => {
+                        const lowerTerm = searchTerm.toLowerCase();
+                        const filteredTasks = list.tasks.filter((task) =>
+                            task.assigned_to?.some((member) => member.name.toLowerCase().includes(lowerTerm)),
+                        );
+                        return { ...list, tasks: filteredTasks };
+                    })
+                    .filter((list) => list.tasks.length > 0);
+            }
         }
         if (dateFilter) {
             const now = new Date();
