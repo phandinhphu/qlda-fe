@@ -48,10 +48,8 @@ export default function ProjectPage() {
                     const matchTaskName = taskTitle.includes(lowerTerm);
 
                     // Check tên Member
-                    let matchMember = false;
-                    if (task.assigned_to && task.assigned_to.name) {
-                        matchMember = task.assigned_to.name.toLowerCase().includes(lowerTerm);
-                    }
+                    const matchMember =
+                        task.assigned_to?.some((member) => member.name.toLowerCase().includes(lowerTerm)) || false;
 
                     // Trả về true nếu task này khớp điều kiện tìm kiếm
                     if (filterType === 'task') return matchTaskName;
@@ -85,9 +83,9 @@ export default function ProjectPage() {
                             return taskDate.getTime() === now.getTime();
                         }
                         if (dateFilter === 'week') {
-                            const oneWeekAgo = new Date(now);
-                            oneWeekAgo.setDate(now.getDate() - 7);
-                            return taskDate >= oneWeekAgo && taskDate <= now;
+                            const oneWeekAhead = new Date(now);
+                            oneWeekAhead.setDate(now.getDate() + 7);
+                            return taskDate >= now && taskDate <= oneWeekAhead;
                         }
                         if (dateFilter === 'month') {
                             return (
@@ -126,14 +124,16 @@ export default function ProjectPage() {
 
     const handleChangeView = async (view) => {
         setView(view);
-        if (view === 'board') {
-            window.location.reload();
-        }
+
         try {
+            if (view === 'board') {
+                const data = await getListsByProject(projectId);
+                setLists(data);
+            }
             const allTasks = await getAllTask(projectId);
             setTasks(allTasks);
         } catch (error) {
-            setToast({ type: 'error', message: 'Đã có lỗi xảy ra khi tải dữ liệu lịch' });
+            setToast({ type: 'error', message: 'Đã có lỗi xảy ra khi tải dữ liệu' });
         }
     };
 
@@ -277,7 +277,7 @@ export default function ProjectPage() {
                                 >
                                     <option value="">Mọi lúc</option>
                                     <option value="today">Hôm nay</option>
-                                    <option value="week">7 ngày qua</option>
+                                    <option value="week">7 ngày tới</option>
                                     <option value="month">Tháng này</option>
                                 </select>
                                 <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">

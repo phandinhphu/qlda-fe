@@ -11,6 +11,12 @@ const Icon = ({ name, className = '' }) => <span className={`material-icons ${cl
 export default function ListComponent({ list, onListDeleted, onListTitleUpdated }) {
     // Lấy tasks từ prop (list.tasks từ API sẽ là mảng các task)
     const [tasks, setTasks] = useState(list.tasks || []);
+
+    // Sync state with props when list.tasks changes (e.g. after view switch reload)
+    useEffect(() => {
+        setTasks(list.tasks || []);
+    }, [list.tasks]);
+
     const [taskLabels, setTaskLabels] = useState({}); // { taskId: [labels] }
     const [taskMembers, setTaskMembers] = useState({}); // { taskId: [members] }
     const [showAddTaskForm, setShowAddTaskForm] = useState(false);
@@ -175,7 +181,6 @@ export default function ListComponent({ list, onListDeleted, onListTitleUpdated 
         }
         setIsModalOpen(false);
         setSelectedTaskId(null);
-        window.location.reload();
     };
 
     const onEditTask = async (taskId, editedTitle) => {
