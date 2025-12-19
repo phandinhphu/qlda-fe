@@ -48,10 +48,8 @@ export default function ProjectPage() {
                     const matchTaskName = taskTitle.includes(lowerTerm);
 
                     // Check tên Member
-                    let matchMember = false;
-                    if (task.assigned_to && task.assigned_to.name) {
-                        matchMember = task.assigned_to.name.toLowerCase().includes(lowerTerm);
-                    }
+                    const matchMember =
+                        task.assigned_to?.some((member) => member.name.toLowerCase().includes(lowerTerm)) || false;
 
                     // Trả về true nếu task này khớp điều kiện tìm kiếm
                     if (filterType === 'task') return matchTaskName;
@@ -69,6 +67,18 @@ export default function ProjectPage() {
                 }
                 return matchListName || hasMatchingTask;
             });
+
+            if (filterType === 'member') {
+                result = result
+                    .map((list) => {
+                        const lowerTerm = searchTerm.toLowerCase();
+                        const filteredTasks = list.tasks.filter((task) =>
+                            task.assigned_to?.some((member) => member.name.toLowerCase().includes(lowerTerm)),
+                        );
+                        return { ...list, tasks: filteredTasks };
+                    })
+                    .filter((list) => list.tasks.length > 0);
+            }
         }
         if (dateFilter) {
             const now = new Date();
@@ -85,9 +95,9 @@ export default function ProjectPage() {
                             return taskDate.getTime() === now.getTime();
                         }
                         if (dateFilter === 'week') {
-                            const oneWeekAgo = new Date(now);
-                            oneWeekAgo.setDate(now.getDate() - 7);
-                            return taskDate >= oneWeekAgo && taskDate <= now;
+                            const oneWeekAhead = new Date(now);
+                            oneWeekAhead.setDate(now.getDate() + 7);
+                            return taskDate >= now && taskDate <= oneWeekAhead;
                         }
                         if (dateFilter === 'month') {
                             return (
@@ -126,11 +136,14 @@ export default function ProjectPage() {
 
     const handleChangeView = async (view) => {
         setView(view);
+
         try {
+            const data = await getListsByProject(projectId);
+            setLists(data);
             const allTasks = await getAllTask(projectId);
             setTasks(allTasks);
         } catch (error) {
-            setToast({ type: 'error', message: 'Đã có lỗi xảy ra khi tải dữ liệu lịch' });
+            setToast({ type: 'error', message: 'Đã có lỗi xảy ra khi tải dữ liệu' });
         }
     };
 
@@ -225,99 +238,109 @@ export default function ProjectPage() {
                         <span>Lịch</span>
                     </button>
                 </header>
-                {currentView === 'calendar' ? (
-                    <TaskCalendar tasks={tasks} projectId={projectId} onTaskUpdated={handleUpdateTaskInList} />
-                ) : (
-                    <>
-                        <header className="p-4 bg-white border-b border-gray-200 flex flex-wrap gap-4 items-center">
-                            <div className="relative flex-grow max-w-md">
-                                <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                                    <Icon name="search" className="text-gray-400" />
-                                </span>
-                                <input
-                                    type="text"
-                                    placeholder="Tìm kiếm..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full py-2 pl-10 pr-4 text-sm bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-
-                            <div className="relative">
-                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <Icon name="filter_list" className="text-gray-500 text-lg" />
-                                </span>
-                                <select
-                                    value={filterType}
-                                    onChange={(e) => setFilterType(e.target.value)}
-                                    className="appearance-none py-2 pl-10 pr-8 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer hover:bg-gray-50 transition-colors"
-                                >
-                                    <option value="all">Lọc</option>
-                                    <option value="list">Danh sách</option>
-                                    <option value="task">Thẻ công việc</option>
-                                    <option value="member">Thành viên</option>
-                                </select>
-                                {/* Mũi tên tùy chỉnh (Optional - để đẹp hơn mũi tên mặc định) */}
-                                <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                                    <Icon name="expand_more" className="text-gray-400" />
-                                </span>
-                            </div>
-
-                            <div className="relative">
-                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <Icon name="calendar_today" className="text-gray-500 text-lg" />
-                                </span>
-                                <select
-                                    value={dateFilter}
-                                    onChange={(e) => setDateFilter(e.target.value)}
-                                    className="appearance-none py-2 pl-10 pr-8 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer hover:bg-gray-50 transition-colors"
-                                >
-                                    <option value="">Mọi lúc</option>
-                                    <option value="today">Hôm nay</option>
-                                    <option value="week">7 ngày qua</option>
-                                    <option value="month">Tháng này</option>
-                                </select>
-                                <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                                    <Icon name="expand_more" className="text-gray-400" />
-                                </span>
-                            </div>
-                            <div className="ml-auto">
-                                <ShareButton projectId={project._id} />
-                            </div>
-                            <div className="flex items-center space-x-4">
-                                {/* Nút chat */}
-                                <Link
-                                    to={`/chat/project/${project._id}`}
-                                    className="text-gray-400 hover:text-gray-900 hover:border-none relative bg-white focus:border-none focus:bg-gray-100 transition-colors p-2 rounded-lg"
-                                >
-                                    <Icon name="chat" className="text-2xl" />
-                                </Link>
-                            </div>
-                        </header>
-
-                        <main className="flex-grow flex p-4 overflow-x-auto space-x-4 min-h-0">
-                            <SortableContext
-                                items={filteredLists.map((list) => list._id)}
-                                strategy={horizontalListSortingStrategy}
-                            >
-                                {/* Render các List (cột) */}
-                                {filteredLists.map((list) => (
-                                    <ListComponent
-                                        key={list._id}
-                                        list={list}
-                                        onListDeleted={handleListDeleted}
-                                        onListTitleUpdated={handleListTitleUpdated}
+                <div
+                    key={currentView}
+                    className="flex-grow flex flex-col h-full animate-in fade-in zoom-in-95 duration-200 overflow-hidden"
+                >
+                    {currentView === 'calendar' ? (
+                        <TaskCalendar
+                            tasks={tasks}
+                            lists={lists}
+                            projectId={projectId}
+                            onTaskUpdated={handleUpdateTaskInList}
+                        />
+                    ) : (
+                        <>
+                            <header className="p-4 bg-white border-b border-gray-200 flex flex-wrap gap-4 items-center flex-shrink-0">
+                                <div className="relative flex-grow max-w-md">
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                                        <Icon name="search" className="text-gray-400" />
+                                    </span>
+                                    <input
+                                        type="text"
+                                        placeholder="Tìm kiếm..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="w-full py-2 pl-10 pr-4 text-sm bg-white text-gray-900 border-none shadow-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
                                     />
-                                ))}
-                            </SortableContext>
-                            {/* Component Thêm List Mới */}
-                            <AddListForm onSaveList={handleSaveList} />
-                            <DragOverlay>
-                                {activeList ? <ListComponent list={activeList} onListDeleted={() => {}} /> : null}
-                            </DragOverlay>
-                        </main>
-                    </>
-                )}
+                                </div>
+
+                                <div className="relative">
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                        <Icon name="filter_list" className="text-gray-500 text-lg" />
+                                    </span>
+                                    <select
+                                        value={filterType}
+                                        onChange={(e) => setFilterType(e.target.value)}
+                                        className="appearance-none py-2 pl-10 pr-8 text-sm bg-white text-gray-900 border-none shadow-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer hover:bg-gray-50 transition-colors"
+                                    >
+                                        <option value="all">Lọc</option>
+                                        <option value="list">Danh sách</option>
+                                        <option value="task">Thẻ công việc</option>
+                                        <option value="member">Thành viên</option>
+                                    </select>
+                                    {/* Mũi tên tùy chỉnh (Optional - để đẹp hơn mũi tên mặc định) */}
+                                    <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                        <Icon name="expand_more" className="text-gray-400" />
+                                    </span>
+                                </div>
+
+                                <div className="relative">
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                        <Icon name="calendar_today" className="text-gray-500 text-lg" />
+                                    </span>
+                                    <select
+                                        value={dateFilter}
+                                        onChange={(e) => setDateFilter(e.target.value)}
+                                        className="appearance-none py-2 pl-10 pr-8 text-sm bg-white text-gray-900 border-none shadow-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer hover:bg-gray-50 transition-colors"
+                                    >
+                                        <option value="">Mọi lúc</option>
+                                        <option value="today">Hôm nay</option>
+                                        <option value="week">7 ngày tới</option>
+                                        <option value="month">Tháng này</option>
+                                    </select>
+                                    <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                        <Icon name="expand_more" className="text-gray-400" />
+                                    </span>
+                                </div>
+                                <div className="ml-auto">
+                                    <ShareButton projectId={project._id} />
+                                </div>
+                                <div className="flex items-center space-x-4">
+                                    {/* Nút chat */}
+                                    <Link
+                                        to={`/chat/project/${project._id}`}
+                                        className="text-gray-400 hover:text-gray-900 hover:border-none relative bg-white focus:border-none focus:bg-gray-100 transition-colors p-2 rounded-lg"
+                                    >
+                                        <Icon name="chat" className="text-2xl" />
+                                    </Link>
+                                </div>
+                            </header>
+
+                            <main className="flex-grow flex p-4 overflow-x-auto space-x-4 min-h-0">
+                                <SortableContext
+                                    items={filteredLists.map((list) => list._id)}
+                                    strategy={horizontalListSortingStrategy}
+                                >
+                                    {/* Render các List (cột) */}
+                                    {filteredLists.map((list) => (
+                                        <ListComponent
+                                            key={list._id}
+                                            list={list}
+                                            onListDeleted={handleListDeleted}
+                                            onListTitleUpdated={handleListTitleUpdated}
+                                        />
+                                    ))}
+                                </SortableContext>
+                                {/* Component Thêm List Mới */}
+                                <AddListForm onSaveList={handleSaveList} />
+                                <DragOverlay>
+                                    {activeList ? <ListComponent list={activeList} onListDeleted={() => {}} /> : null}
+                                </DragOverlay>
+                            </main>
+                        </>
+                    )}
+                </div>
             </div>
         </DndContext>
     );
