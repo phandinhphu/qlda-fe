@@ -32,7 +32,7 @@ export default function TaskCard({
     return (
         <div
             onClick={!isEditing ? onClick : undefined}
-            className="group relative bg-white hover:bg-gray-50 p-3 rounded-lg mb-2 cursor-pointer shadow-sm hover:shadow-md border border-gray-200 transition-all duration-200"
+            className="group relative bg-white hover:bg-gray-50 p-3 rounded-lg mb-2 cursor-pointer shadow-sm hover:shadow-md border border-gray-200 transition-all duration-200 hover:z-10"
         >
             <div className="flex items-start justify-between gap-2">
                 <div className="flex items-start gap-2 flex-1">

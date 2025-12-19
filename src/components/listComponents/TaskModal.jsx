@@ -130,137 +130,157 @@ export default function TaskModal({ taskId, isOpen, onClose, onLabelsChange, onM
 
     return (
         <div
-            className="fixed inset-0 bg-gray-100/30 backdrop-blur-sm flex items-center justify-center z-50 overflow-y-auto p-6"
+            className="fixed inset-0 bg-black/60 flex items-start justify-center z-[1001] overflow-y-auto p-4 md:p-8 animate-fade-in-overlay"
             onClick={onClose}
         >
             <div
-                className="bg-gray-200 rounded-lg w-full max-w-5xl shadow-xl max-h-[90vh] overflow-hidden flex flex-col"
+                className="bg-[#F4F5F7] rounded-xl w-full max-w-4xl shadow-2xl min-h-[50vh] flex flex-col my-auto relative animate-slide-up-fade"
                 onClick={(e) => e.stopPropagation()}
             >
                 {loading ? (
                     <div className="flex items-center justify-center h-96">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                     </div>
                 ) : task ? (
                     <>
                         {/* Header */}
-                        <div className="bg-gray-200 p-6 pb-4">
+                        <div className="bg-[#F4F5F7] px-6 pt-6 pb-2">
                             <div className="flex items-start justify-between mb-4">
-                                <div className="flex items-start gap-3 flex-1">
-                                    <Icon name="check_box" className="text-gray-700 text-2xl" />
+                                <div className="flex items-start gap-4 flex-1">
+                                    <Icon name="check_box" className="text-gray-700 text-2xl mt-1" />
                                     <div className="flex-1">
-                                        <h2 className="text-2xl font-semibold text-gray-900 mb-2">{task.title}</h2>
-                                        <p className="text-sm text-gray-600">
+                                        <h2 className="text-xl font-semibold text-gray-800 mb-1 leading-tight">
+                                            {task.title}
+                                        </h2>
+                                        <p className="text-sm text-gray-500">
                                             trong danh sách{' '}
-                                            <span className="font-medium">{task.list_id?.title || 'N/A'}</span>
+                                            <a
+                                                href="#"
+                                                className="font-medium text-gray-700 underline underline-offset-2 hover:text-blue-700"
+                                            >
+                                                {task.list_id?.title || 'N/A'}
+                                            </a>
                                         </p>
                                     </div>
                                 </div>
                                 <button
                                     onClick={onClose}
-                                    className="text-gray-600 hover:text-gray-800 hover:bg-gray-300 p-2 rounded transition-colors"
+                                    className="bg-gray-100 text-gray-500 hover:text-gray-800 hover:bg-gray-200/50 p-2 rounded-full transition-colors absolute top-4 right-4"
                                 >
-                                    <Icon name="close" className="text-2xl" />
-                                </button>
-                            </div>
-
-                            {/* Buttons Row */}
-                            <div className="flex gap-2">
-                                <button
-                                    className="flex items-center gap-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-1.5 rounded text-sm transition-colors"
-                                    onClick={handleAttachClick}
-                                >
-                                    <Icon name="attachment" className="text-base" />
-                                    <span>Đính kèm</span>
-                                </button>
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    style={{ display: 'none' }}
-                                    onChange={handleFileSelected}
-                                />
-
-                                <button className="flex items-center gap-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-1.5 rounded text-sm transition-colors">
-                                    <Icon name="label" className="text-base" />
-                                    <span>Nhãn</span>
-                                </button>
-                                <div className="relative inline-block" ref={calendarRef}>
-                                    <button
-                                        className={`flex items-center gap-1 px-3 py-1.5 rounded text-sm transition-colors ${
-                                            date
-                                                ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' // Style khi ĐÃ có ngày
-                                                : 'bg-gray-300 hover:bg-gray-400 text-gray-800' // Style khi CHƯA có ngày
-                                        }`}
-                                        onClick={() => setShowCalendar(!showCalendar)}
-                                    >
-                                        <Icon name="event" className="text-base" />
-
-                                        {/* 4. HIỂN THỊ NGÀY ĐÃ CHỌN */}
-                                        <span>
-                                            {date ? format(date, 'dd/MM/yyyy', { locale: vi }) : 'Ngày đến hạn'}
-                                        </span>
-                                    </button>
-
-                                    {showCalendar && (
-                                        // Style dropdown lịch
-                                        <div className="absolute top-full left-0 mt-2 z-50 bg-white shadow-xl rounded-lg border border-gray-200">
-                                            <Calendar
-                                                selected={date}
-                                                onSelect={handleSelectDueDate}
-                                                // Thêm mode="single" nếu Calendar của bạn cần prop này
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                                <button className="flex items-center gap-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-1.5 rounded text-sm transition-colors">
-                                    <Icon name="checklist" className="text-base" />
-                                    <span>Việc cần làm</span>
-                                </button>
-                                <button className="flex items-center gap-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-1.5 rounded text-sm transition-colors">
-                                    <Icon name="group" className="text-base" />
-                                    <span>Thành viên</span>
+                                    <Icon name="close" className="text-xl" />
                                 </button>
                             </div>
                         </div>
 
-                        {/* Body */}
-                        <div className="p-6 bg-gray-200 flex-1 overflow-y-auto">
-                            <div className="flex gap-6">
-                                {/* Left Content */}
-                                <div className="flex-1 space-y-4 max-h-[80vh] overflow-y-auto pr-2">
-                                    {/* Description */}
+                        {/* Body - 2 Columns Layout */}
+                        <div className="flex flex-col md:flex-row px-6 pb-8 gap-8">
+                            {/* Main Content (Left) */}
+                            <div className="flex-1 space-y-6 min-w-0">
+                                {/* Description */}
+                                <div className="space-y-4">
                                     <TaskModalDescription task={task} onUpdate={handleTaskUpdate} />
+                                </div>
 
-                                    {/* Labels */}
-                                    <TaskModalLabels
-                                        task={task}
-                                        onUpdate={handleTaskUpdate}
-                                        onLabelsChange={onLabelsChange}
-                                    />
-
-                                    {/* Members */}
-                                    <TaskModalMembers
-                                        task={task}
-                                        onUpdate={handleTaskUpdate}
-                                        onMembersChange={onMembersChange}
-                                    />
-
-                                    {/* Steps */}
+                                {/* Steps */}
+                                <div className="space-y-4">
                                     <TaskModalSteps task={task} onUpdate={handleTaskUpdate} />
+                                </div>
 
-                                    {/* Files */}
+                                {/* Files */}
+                                <div className="space-y-4">
                                     <TaskModalAttachments taskId={taskId} newFile={newUploadedFile} />
                                 </div>
 
-                                {/* Right Sidebar - Comments */}
-                                <div className="w-[460px] shrink-0 max-h-[80vh] overflow-y-auto">
+                                {/* Comments */}
+                                <div className="space-y-4 pt-4">
                                     <TaskModalComments task={task} onUpdate={handleTaskUpdate} />
+                                </div>
+                            </div>
+
+                            {/* Sidebar (Right) */}
+                            <div className="w-full md:w-64 space-y-4 shrink-0">
+                                {/* Component Labels & Members placed in sidebar logic for better UX or kept here but styled nicely */}
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-2 md:grid-cols-1 gap-2">
+                                        <TaskModalMembers
+                                            task={task}
+                                            onUpdate={handleTaskUpdate}
+                                            onMembersChange={onMembersChange}
+                                        />
+                                        <TaskModalLabels
+                                            task={task}
+                                            onUpdate={handleTaskUpdate}
+                                            onLabelsChange={onLabelsChange}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                                        Thêm vào thẻ
+                                    </h3>
+
+                                    <button
+                                        onClick={handleAttachClick}
+                                        className="w-full justify-start py-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded shadow-sm transition-colors flex items-center gap-2"
+                                    >
+                                        <Icon name="attachment" className="text-lg" />
+                                        <span>Đính kèm</span>
+                                    </button>
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        style={{ display: 'none' }}
+                                        onChange={handleFileSelected}
+                                    />
+
+                                    {/* Date Picker Button */}
+                                    <div className="relative" ref={calendarRef}>
+                                        <button
+                                            className={`w-full justify-start py-2 px-3 text-sm font-medium rounded shadow-sm transition-colors flex items-center gap-2 ${
+                                                date
+                                                    ? 'bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200'
+                                                    : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                                            }`}
+                                            onClick={() => setShowCalendar(!showCalendar)}
+                                        >
+                                            <Icon name="event" className="text-lg" />
+                                            <span>
+                                                {date ? format(date, 'dd/MM/yyyy', { locale: vi }) : 'Ngày đến hạn'}
+                                            </span>
+                                        </button>
+
+                                        {showCalendar && (
+                                            <div className="absolute top-full left-0 mt-2 z-50 bg-white shadow-xl rounded-lg border border-gray-200">
+                                                <Calendar selected={date} onSelect={handleSelectDueDate} />
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <button className="w-full justify-start py-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded shadow-sm transition-colors flex items-center gap-2">
+                                        <Icon name="checklist" className="text-lg" />
+                                        <span>Việc cần làm</span>
+                                    </button>
+                                </div>
+
+                                {/* Actions Logic */}
+                                <div className="space-y-2 pt-4">
+                                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                                        Thao tác
+                                    </h3>
+                                    <button className="w-full justify-start py-2 px-3 bg-gray-100 hover:bg-red-50 text-gray-700 hover:text-red-600 text-sm font-medium rounded shadow-sm transition-colors flex items-center gap-2">
+                                        <Icon name="delete" className="text-lg" />
+                                        <span>Xóa thẻ</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </>
                 ) : (
-                    <div className="flex items-center justify-center h-96 text-gray-500">Không tìm thấy task</div>
+                    <div className="flex items-center justify-center h-64 text-gray-500">
+                        <Icon name="error_outline" className="text-4xl mb-2" />
+                        <p>Không tìm thấy thẻ</p>
+                    </div>
                 )}
             </div>
         </div>
