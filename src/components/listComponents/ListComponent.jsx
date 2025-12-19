@@ -175,6 +175,7 @@ export default function ListComponent({ list, onListDeleted, onListTitleUpdated 
         }
         setIsModalOpen(false);
         setSelectedTaskId(null);
+        window.location.reload();
     };
 
     const onEditTask = async (taskId, editedTitle) => {

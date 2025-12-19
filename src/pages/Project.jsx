@@ -126,6 +126,9 @@ export default function ProjectPage() {
 
     const handleChangeView = async (view) => {
         setView(view);
+        if (view === 'board') {
+            window.location.reload();
+        }
         try {
             const allTasks = await getAllTask(projectId);
             setTasks(allTasks);
