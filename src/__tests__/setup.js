@@ -35,3 +35,6 @@ globalThis.IntersectionObserver = class IntersectionObserver {
 
 // Mock window.alert
 window.alert = vi.fn();
+
+// Mock scrollIntoView
+Element.prototype.scrollIntoView = vi.fn();
