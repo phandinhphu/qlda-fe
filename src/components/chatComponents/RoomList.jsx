@@ -123,7 +123,7 @@ export default function RoomList({ onSelectRoom, selectedRoomId, projectId }) {
     return (
         <div className="h-full flex flex-col bg-white">
             {/* Header với gradient */}
-            <div className="p-4 bg-linear-to-r from-blue-600 to-blue-700 text-white shadow-lg">
+            <div className="p-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg">
                 <div className="flex items-center justify-between mb-3">
                     <h2 className="text-xl font-bold flex items-center gap-2">
                         <MessageCircle size={24} />
@@ -182,7 +182,7 @@ export default function RoomList({ onSelectRoom, selectedRoomId, projectId }) {
                             <div className="flex items-center gap-3">
                                 {/* Avatar với online indicator */}
                                 <div className="relative shrink-0">
-                                    <div className="w-12 h-12 rounded-full bg-linear-to-br from-purple-400 to-purple-600 flex items-center justify-center shadow-md">
+                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center shadow-md">
                                         {room.type === 'direct' && room.other_member?.avatar_url ? (
                                             <img
                                                 src={room.other_member.avatar_url}

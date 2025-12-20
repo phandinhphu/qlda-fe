@@ -135,9 +135,9 @@ export default function ChatBox({ room }) {
 
     if (!room) {
         return (
-            <div className="flex items-center justify-center h-full bg-linear-to-br from-gray-50 to-gray-100">
+            <div className="flex items-center justify-center h-full bg-gradient-to-br from-gray-50 to-gray-100">
                 <div className="text-center px-8">
-                    <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-xl">
+                    <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-xl">
                         <MessageCircle size={48} className="text-white" />
                     </div>
                     <h3 className="text-xl font-semibold text-gray-800 mb-2">Chào mừng đến với Chat</h3>
@@ -152,7 +152,7 @@ export default function ChatBox({ room }) {
     return (
         <div className="flex flex-col h-full bg-white">
             {/* Header với gradient */}
-            <div className="px-6 py-4 bg-linear-to-r from-blue-600 to-blue-700 text-white shadow-lg">
+            <div className="px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         {/* Avatar */}
@@ -281,7 +281,7 @@ export default function ChatBox({ room }) {
                     <button
                         onClick={handleSendMessage}
                         disabled={!inputMessage.trim()}
-                        className="p-3 bg-linear-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl disabled:shadow-none flex items-center justify-center"
+                        className="p-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl disabled:shadow-none flex items-center justify-center"
                         title="Gửi tin nhắn"
                     >
                         <Send size={20} />
@@ -312,11 +312,11 @@ function MessageItem({ message, user }) {
                         <span className="font-semibold text-sm text-gray-700">Bạn</span>
                         <span className="text-xs text-gray-400 font-medium">{formatTime(message.created_at)}</span>
                     </div>
-                    <div className="bg-linear-to-r from-blue-600 to-blue-700 text-white px-4 py-3 rounded-2xl rounded-tr-md shadow-md">
-                        <p className="text-sm leading-relaxed wrap-break-word">{message.message}</p>
+                    <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-3 rounded-2xl rounded-tr-md shadow-md">
+                        <p className="text-sm leading-relaxed break-words">{message.message}</p>
                     </div>
                 </div>
-                <div className="w-9 h-9 rounded-full bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center shrink-0 shadow-md">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shrink-0 shadow-md">
                     {user?.avatar_url ? (
                         <img
                             src={user.avatar_url}
@@ -334,7 +334,7 @@ function MessageItem({ message, user }) {
     // Tin nhắn của người khác - bên trái
     return (
         <div className="flex gap-3 animate-fade-in">
-            <div className="w-9 h-9 rounded-full bg-linear-to-br from-purple-400 to-purple-600 flex items-center justify-center shrink-0 shadow-md">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center shrink-0 shadow-md">
                 {message.sender_id?.avatar_url ? (
                     <img
                         src={message.sender_id.avatar_url}
