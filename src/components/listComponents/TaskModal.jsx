@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { setDueDate, getTaskById, uploadTaskFile } from '../../services/taskServices';
+import { setDueDate, getTaskById, uploadTaskFile, setReminderDate } from '../../services/taskServices';
 import TaskModalHeader from './TaskModalHeader';
 import TaskModalDescription from './TaskModalDescription';
 import TaskModalLabels from './TaskModalLabels';
@@ -15,6 +15,7 @@ import Calendar from '../common/Calendar';
 const Icon = ({ name, className = '' }) => <span className={`material-icons ${className}`}>{name}</span>;
 
 export default function TaskModal({ taskId, isOpen, onClose, onLabelsChange, onMembersChange }) {
+    const [toast, setToast] = useState(null);
     const [task, setTask] = useState(null);
     const [loading, setLoading] = useState(true);
     const [date, setDate] = useState(new Date());
@@ -22,12 +23,29 @@ export default function TaskModal({ taskId, isOpen, onClose, onLabelsChange, onM
     const fileInputRef = useRef(null);
     const [newUploadedFile, setNewUploadedFile] = useState(null);
     const calendarRef = useRef(null);
+    const [showReminder, setShowReminder] = useState(false);
+    const [reminderDate, setReminderDateState] = useState(null);
+    const reminderRef = useRef(null);
+
     const loadTaskDetail = async () => {
         try {
             setLoading(true);
             const data = await getTaskById(taskId);
             setTask(data);
             setDate(data.due_date ? new Date(data.due_date) : null);
+            if (data.reminder_date && data.due_date) {
+                const diffTime = Math.abs(new Date(data.due_date) - new Date(data.reminder_date));
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                if (diffDays === 1) {
+                    setReminderDateState('Nhắc trước 1 ngày');
+                } else if (diffDays === 3) {
+                    setReminderDateState('Nhắc trước 3 ngày');
+                } else {
+                    setReminderDateState(format(new Date(data.reminder_date), 'dd/MM/yyyy HH:mm', { locale: vi }));
+                }
+            } else {
+                setReminderDateState(null);
+            }
         } catch (error) {
             console.error('Error loading task:', error);
         } finally {
@@ -41,14 +59,18 @@ export default function TaskModal({ taskId, isOpen, onClose, onLabelsChange, onM
             if (calendarRef.current && !calendarRef.current.contains(event.target)) {
                 setShowCalendar(false);
             }
+            if (reminderRef.current && !reminderRef.current.contains(event.target)) {
+                setShowReminder(false);
+            }
         };
-        if (showCalendar) {
+
+        if (showCalendar || showReminder) {
             document.addEventListener('mousedown', handleClickOutside);
         }
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [showCalendar]);
+    }, [showCalendar, showReminder]);
 
     useEffect(() => {
         if (isOpen && taskId) {
@@ -59,6 +81,34 @@ export default function TaskModal({ taskId, isOpen, onClose, onLabelsChange, onM
 
     const handleTaskUpdate = (updatedTask) => {
         setTask(updatedTask);
+    };
+
+    const handleSetReminder = async (days) => {
+        setShowReminder(false);
+        if (task && task.due_date) {
+            const newReminderDate = new Date(task.due_date);
+            newReminderDate.setDate(newReminderDate.getDate() - days);
+
+            try {
+                await setReminderDate(taskId, newReminderDate);
+                if (days == 1) {
+                    setReminderDateState('Nhắc trước 1 ngày');
+                } else if (days == 3) {
+                    setReminderDateState('Nhắc trước 3 ngày');
+                }
+                setToast({
+                    message: `Đã đặt nhắc nhở trước ${days} ngày!`,
+                    type: 'success',
+                });
+            } catch (error) {
+                setToast({
+                    message: error.message || 'Lỗi đặt nhắc nhở!',
+                    type: 'error',
+                });
+            }
+        } else {
+            alert('Vui lòng chọn ngày đến hạn trước khi đặt nhắc nhở!');
+        }
     };
 
     if (!isOpen) return null;
@@ -133,6 +183,7 @@ export default function TaskModal({ taskId, isOpen, onClose, onLabelsChange, onM
             className="fixed inset-0 bg-black/60 flex items-start justify-center z-[1001] overflow-y-auto p-4 md:p-8 animate-fade-in-overlay"
             onClick={onClose}
         >
+            {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
             <div
                 className="bg-[#F4F5F7] rounded-xl w-full max-w-4xl shadow-2xl min-h-[50vh] flex flex-col my-auto relative animate-slide-up-fade"
                 onClick={(e) => e.stopPropagation()}
@@ -257,10 +308,35 @@ export default function TaskModal({ taskId, isOpen, onClose, onLabelsChange, onM
                                         )}
                                     </div>
 
-                                    <button className="w-full justify-start py-2 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded shadow-sm transition-colors flex items-center gap-2">
-                                        <Icon name="checklist" className="text-lg" />
-                                        <span>Việc cần làm</span>
-                                    </button>
+                                    <div className="relative" ref={reminderRef}>
+                                        <button
+                                            className={`w-full justify-start py-2 px-3 text-sm font-medium rounded shadow-sm transition-colors flex items-center gap-2 ${
+                                                showReminder || reminderDate
+                                                    ? 'bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200'
+                                                    : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                                            }`}
+                                            onClick={() => setShowReminder(!showReminder)}
+                                        >
+                                            <Icon name="alarm" className="text-lg" />
+                                            <span>{reminderDate ? reminderDate : 'Ngày nhắc'}</span>
+                                        </button>
+                                        {showReminder && (
+                                            <div className="absolute top-full left-0 mt-2 z-50 bg-white shadow-xl rounded-lg border border-gray-200 w-full overflow-hidden">
+                                                <button
+                                                    onClick={() => handleSetReminder(1)}
+                                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 bg-white hover:bg-blue-50 hover:text-blue-700 transition-colors border-b border-gray-100 last:border-0"
+                                                >
+                                                    Trước 1 ngày
+                                                </button>
+                                                <button
+                                                    onClick={() => handleSetReminder(3)}
+                                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 bg-white hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                                                >
+                                                    Trước 3 ngày
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {/* Actions Logic */}

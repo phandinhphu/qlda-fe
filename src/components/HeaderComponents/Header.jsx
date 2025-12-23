@@ -1,26 +1,92 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../hooks/auth';
+import { useSocket } from '../../hooks/socket';
 import { useNavigate } from 'react-router-dom';
 import DropdownMenu from './DropDownMenu';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
+import { format } from 'date-fns';
+import { vi } from 'date-fns/locale';
+
 const Icon = ({ name, className = '' }) => <span className={`material-icons ${className}`}>{name}</span>;
 
 export default function Header() {
     const { user, logout } = useAuth();
+    const { socket } = useSocket();
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [searchText, setSearchText] = useState('');
+    const [notifications, setNotifications] = useState(() => {
+        const stored = localStorage.getItem('notifications');
+        return stored ? JSON.parse(stored) : [];
+    });
+    const [showNotifications, setShowNotifications] = useState(false);
+
+    const [unreadCount, setUnreadCount] = useState(() => {
+        const stored = localStorage.getItem('notifications');
+        const parsed = stored ? JSON.parse(stored) : [];
+        return parsed.filter((n) => !n.isRead).length;
+    });
+
     const menuRef = useRef(null);
+    const notificationRef = useRef(null);
+
+    // Save to local storage whenever notifications change
+    useEffect(() => {
+        localStorage.setItem('notifications', JSON.stringify(notifications));
+        const unread = notifications.filter((n) => !n.isRead).length;
+        setUnreadCount(unread);
+    }, [notifications]);
+
+    // Listen for reminder notifications
+    useEffect(() => {
+        if (socket) {
+            const handleTaskReminder = (data) => {
+                console.log('Received task reminder:', data);
+
+                // Add to notification list
+                const newNotification = {
+                    id: Date.now(),
+                    ...data,
+                    isRead: false,
+                    receivedAt: new Date().toISOString(),
+                };
+
+                setNotifications((prev) => [newNotification, ...prev]);
+
+                toast.info(
+                    <div
+                        onClick={() => {
+                            navigate(
+                                data.projectId ? `/projects/${data.projectId}?taskId=${data.taskId}` : '/projects',
+                            );
+                        }}
+                    >
+                        <h4 className="font-bold">Nhắc nhở công việc</h4>
+                        <p>{data.message}</p>
+                    </div>,
+                    {
+                        autoClose: 10000,
+                    },
+                );
+            };
+
+            socket.on('task_reminder', handleTaskReminder);
+
+            return () => {
+                socket.off('task_reminder', handleTaskReminder);
+            };
+        }
+    }, [socket, navigate]);
+
     useEffect(() => {
         const handleClickOutside = (event) => {
-            // Nếu menu đang mở VÀ click không nằm trong 'menuRef'
             if (menuRef.current && !menuRef.current.contains(event.target)) {
                 setIsMenuOpen(false); // Đóng menu
             }
         };
-        // Thêm listener vào document
         document.addEventListener('mousedown', handleClickOutside);
-        // Dọn dẹp listener khi component bị gỡ
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
@@ -81,10 +147,84 @@ export default function Header() {
             {/* 3. User & Actions (Right) */}
             <div className="flex items-center justify-end gap-3 w-64">
                 {/* Notification Button */}
-                <button className="relative w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">
-                    <Icon name="notifications" className="text-xl" />
-                    <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
-                </button>
+                <div className="relative" ref={notificationRef}>
+                    <button
+                        onClick={() => setShowNotifications(!showNotifications)}
+                        className="relative w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                        <Icon name="notifications" className="text-xl" />
+                        {unreadCount > 0 && (
+                            <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-red-100 transform translate-x-1/4 -translate-y-1/4 bg-red-600 rounded-full border-2 border-white">
+                                {unreadCount > 9 ? '9+' : unreadCount}
+                            </span>
+                        )}
+                    </button>
+
+                    {/* Notification Dropdown */}
+                    {showNotifications && (
+                        <div className="absolute top-full right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-100 z-50 overflow-hidden animate-slide-up-fade origin-top-right">
+                            <div className="p-3 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                                <h3 className="text-sm font-semibold text-gray-700">Thông báo</h3>
+                                {notifications.length > 0 && (
+                                    <button
+                                        className="bg-gray-200 text-xs text-blue-600 hover:text-blue-800 font-medium"
+                                        onClick={() => {
+                                            setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+                                        }}
+                                    >
+                                        Đánh dấu đã đọc
+                                    </button>
+                                )}
+                            </div>
+                            <div className="max-h-96 overflow-y-auto">
+                                {notifications.length === 0 ? (
+                                    <div className="p-8 text-center text-gray-400 text-sm">Không có thông báo nào</div>
+                                ) : (
+                                    notifications.map((notif) => (
+                                        <div
+                                            key={notif.id}
+                                            onClick={() => {
+                                                // Mark as read
+                                                const updated = notifications.map((n) =>
+                                                    n.id === notif.id ? { ...n, isRead: true } : n,
+                                                );
+                                                setNotifications(updated);
+                                                setShowNotifications(false);
+                                                // Navigate
+                                                if (notif.projectId) {
+                                                    navigate(`/projects/${notif.projectId}?taskId=${notif.taskId}`);
+                                                } else {
+                                                    navigate('/projects');
+                                                }
+                                            }}
+                                            className={`p-3 border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition-colors relative ${!notif.isRead ? 'bg-blue-50/50' : ''}`}
+                                        >
+                                            <div className="flex gap-3">
+                                                <div
+                                                    className={`mt-1 w-2 h-2 rounded-full shrink-0 ${!notif.isRead ? 'bg-blue-500' : 'bg-transparent'}`}
+                                                ></div>
+                                                <div>
+                                                    <p
+                                                        className={`text-sm text-gray-800 ${!notif.isRead ? 'font-semibold' : ''}`}
+                                                    >
+                                                        {notif.message}
+                                                    </p>
+                                                    <p className="text-xs text-gray-500 mt-1">
+                                                        {notif.timestamp
+                                                            ? format(new Date(notif.timestamp), 'dd/MM/yyyy HH:mm', {
+                                                                  locale: vi,
+                                                              })
+                                                            : 'Vừa xong'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
 
                 {/* Divider */}
                 <div className="h-8 w-px bg-gray-200 mx-1"></div>

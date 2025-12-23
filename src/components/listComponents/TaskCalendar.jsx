@@ -33,9 +33,9 @@ export default function TaskCalendar({ tasks, lists, onTaskUpdated }) {
     const events = useMemo(() => {
         return tasks
             .map((task, index) => {
-                if (!task.due_date && !task.start_date) return null;
-                const startDate = task.start_date ? new Date(task.start_date) : new Date(task.due_date);
-                const endDate = task.due_date ? new Date(task.due_date) : startDate;
+                if (!task.due_date) return null;
+                const startDate = new Date(task.due_date);
+                const endDate = new Date(task.due_date);
 
                 if (!isValid(startDate) || !isValid(endDate)) return null;
 

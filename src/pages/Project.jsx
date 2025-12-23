@@ -152,7 +152,7 @@ export default function ProjectPage() {
             prevTasks.map((task) => {
                 if (task._id === taskId) {
                     // Trả về task mới với ngày đã sửa
-                    return { ...task, due_date: newDate, start_date: newDate };
+                    return { ...task, due_date: newDate };
                 }
                 return task;
             }),
