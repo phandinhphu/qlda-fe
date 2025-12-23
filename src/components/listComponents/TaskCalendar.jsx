@@ -23,11 +23,17 @@ const localizer = dateFnsLocalizer({
 
 const DnDCalendar = withDragAndDrop(Calendar);
 
-export default function TaskCalendar({ tasks, lists, onTaskUpdated }) {
+export default function TaskCalendar({ tasks, lists, onTaskUpdated, onTaskClick }) {
     // State quản lý ngày và view (để nút bấm hoạt động)
     const [date, setDate] = useState(new Date());
     const [view, setView] = useState('month');
     const [toast, setToast] = useState(null);
+
+    const handleSelectEvent = (event) => {
+        if (onTaskClick) {
+            onTaskClick(event.id);
+        }
+    };
 
     // Chuyển đổi dữ liệu và map thêm tên List
     const events = useMemo(() => {
@@ -102,6 +108,7 @@ export default function TaskCalendar({ tasks, lists, onTaskUpdated }) {
                 views={['month', 'agenda']}
                 onNavigate={handleNavigate}
                 onView={handleViewChange}
+                onSelectEvent={handleSelectEvent}
                 events={events}
                 onEventDrop={onEventDrop}
                 resizable={false}
