@@ -207,27 +207,29 @@ export default function Header() {
                                     notifications.map((notif) => (
                                         <div
                                             key={notif.id}
-                                            onClick={() => {
-                                                // Mark as read
-                                                const updated = notifications.map((n) =>
-                                                    n.id === notif.id ? { ...n, isRead: true } : n,
-                                                );
-                                                setNotifications(updated);
-                                                setShowNotifications(false);
-                                                // Navigate
-                                                if (notif.projectId) {
-                                                    navigate(`/projects/${notif.projectId}?taskId=${notif.taskId}`);
-                                                } else {
-                                                    navigate('/projects');
-                                                }
-                                            }}
-                                            className={`p-3 border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition-colors relative ${!notif.isRead ? 'bg-blue-50/50' : ''}`}
+                                            className={`p-3 border-b border-gray-50 hover:bg-gray-50 transition-colors relative group/item ${!notif.isRead ? 'bg-blue-50/50' : ''}`}
                                         >
-                                            <div className="flex gap-3">
+                                            <div
+                                                className="flex gap-3 cursor-pointer"
+                                                onClick={() => {
+                                                    // Mark as read
+                                                    const updated = notifications.map((n) =>
+                                                        n.id === notif.id ? { ...n, isRead: true } : n,
+                                                    );
+                                                    setNotifications(updated);
+                                                    setShowNotifications(false);
+                                                    // Navigate
+                                                    if (notif.projectId) {
+                                                        navigate(`/projects/${notif.projectId}?taskId=${notif.taskId}`);
+                                                    } else {
+                                                        navigate('/projects');
+                                                    }
+                                                }}
+                                            >
                                                 <div
                                                     className={`mt-1 w-2 h-2 rounded-full shrink-0 ${!notif.isRead ? 'bg-blue-500' : 'bg-transparent'}`}
                                                 ></div>
-                                                <div>
+                                                <div className="flex-1 pr-6">
                                                     <p
                                                         className={`text-sm text-gray-800 ${!notif.isRead ? 'font-semibold' : ''}`}
                                                     >
@@ -241,6 +243,36 @@ export default function Header() {
                                                             : 'Vừa xong'}
                                                     </p>
                                                 </div>
+                                            </div>
+
+                                            {/* Action Buttons - Show on hover */}
+                                            <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
+                                                {!notif.isRead && (
+                                                    <button
+                                                        title="Đánh dấu đã đọc"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            const updated = notifications.map((n) =>
+                                                                n.id === notif.id ? { ...n, isRead: true } : n,
+                                                            );
+                                                            setNotifications(updated);
+                                                        }}
+                                                        className="bg-white p-1 text-blue-500 hover:bg-blue-100 rounded-full"
+                                                    >
+                                                        <Icon name="check_circle" className="text-[16px]" />
+                                                    </button>
+                                                )}
+                                                <button
+                                                    title="Xóa thông báo"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        const updated = notifications.filter((n) => n.id !== notif.id);
+                                                        setNotifications(updated);
+                                                    }}
+                                                    className="bg-white p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full"
+                                                >
+                                                    <Icon name="delete" className="text-[16px]" />
+                                                </button>
                                             </div>
                                         </div>
                                     ))
