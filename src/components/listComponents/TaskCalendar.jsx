@@ -23,19 +23,25 @@ const localizer = dateFnsLocalizer({
 
 const DnDCalendar = withDragAndDrop(Calendar);
 
-export default function TaskCalendar({ tasks, lists, onTaskUpdated }) {
+export default function TaskCalendar({ tasks, lists, onTaskUpdated, onTaskClick }) {
     // State quản lý ngày và view (để nút bấm hoạt động)
     const [date, setDate] = useState(new Date());
     const [view, setView] = useState('month');
     const [toast, setToast] = useState(null);
 
+    const handleSelectEvent = (event) => {
+        if (onTaskClick) {
+            onTaskClick(event.id);
+        }
+    };
+
     // Chuyển đổi dữ liệu và map thêm tên List
     const events = useMemo(() => {
         return tasks
             .map((task, index) => {
-                if (!task.due_date && !task.start_date) return null;
-                const startDate = task.start_date ? new Date(task.start_date) : new Date(task.due_date);
-                const endDate = task.due_date ? new Date(task.due_date) : startDate;
+                if (!task.due_date) return null;
+                const startDate = new Date(task.due_date);
+                const endDate = new Date(task.due_date);
 
                 if (!isValid(startDate) || !isValid(endDate)) return null;
 
@@ -102,6 +108,7 @@ export default function TaskCalendar({ tasks, lists, onTaskUpdated }) {
                 views={['month', 'agenda']}
                 onNavigate={handleNavigate}
                 onView={handleViewChange}
+                onSelectEvent={handleSelectEvent}
                 events={events}
                 onEventDrop={onEventDrop}
                 resizable={false}

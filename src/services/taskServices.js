@@ -55,6 +55,21 @@ export const setDueDate = async (taskId, due_date) => {
         }
     }
 };
+
+export const setReminderDate = async (taskId, reminder_date) => {
+    try {
+        const response = await httpRequest.patch(`/tasks/${taskId}/reminder-date`, { reminder_date });
+        return response.data; // Trả về task đã cập nhật
+    } catch (error) {
+        console.error('Error in setReminderDate:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể đặt ngày nhắc.');
+        }
+    }
+};
+
 /**
  * @desc Cập nhật một Task (thẻ)
  * @param {string} taskId ID của Task

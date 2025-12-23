@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import ListComponent from '../components/listComponents/ListComponent';
+import TaskModal from '../components/listComponents/TaskModal';
 import AddListForm from '../components/listComponents/AddListForm';
 import { getListsByProject, createList, reorderLists } from '../services/listServices';
 import { getProjectById } from '../services/projectServices';
@@ -34,6 +35,11 @@ export default function ProjectPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterType, setFilterType] = useState('all'); // 'all', 'list', 'task', 'member'
     const [dateFilter, setDateFilter] = useState(''); // 'today', 'week', 'month' hoặc ''
+
+    // State cho Modal khi ở Calendar View
+    const [calendarSelectedTaskId, setCalendarSelectedTaskId] = useState(null);
+    const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
+
     const filteredLists = useMemo(() => {
         let result = lists;
         if (searchTerm.trim() !== '') {
@@ -147,12 +153,34 @@ export default function ProjectPage() {
         }
     };
 
+    // Handler cho click vào event trên lịch
+    const handleCalendarTaskClick = (taskId) => {
+        setCalendarSelectedTaskId(taskId);
+        setIsCalendarModalOpen(true);
+    };
+
+    const handleCloseCalendarModal = async () => {
+        setIsCalendarModalOpen(false);
+        setCalendarSelectedTaskId(null);
+        // Refresh tasks để cập nhật thay đổi (ví dụ đổi ngày, đổi tên)
+        try {
+            const allTasks = await getAllTask(projectId);
+            setTasks(allTasks);
+            // Cũng cần refresh lists nếu task bị di chuyển list (tuy nhiên ở calendar view thường chỉ quan tâm tasks)
+            // Nhưng để đồng bộ khi switch về board view, ta nên refresh cả lists
+            const data = await getListsByProject(projectId);
+            setLists(data);
+        } catch (error) {
+            console.error('Failed to refresh tasks after modal close', error);
+        }
+    };
+
     const handleUpdateTaskInList = (taskId, newDate) => {
         setTasks((prevTasks) =>
             prevTasks.map((task) => {
                 if (task._id === taskId) {
                     // Trả về task mới với ngày đã sửa
-                    return { ...task, due_date: newDate, start_date: newDate };
+                    return { ...task, due_date: newDate };
                 }
                 return task;
             }),
@@ -248,6 +276,7 @@ export default function ProjectPage() {
                             lists={lists}
                             projectId={projectId}
                             onTaskUpdated={handleUpdateTaskInList}
+                            onTaskClick={handleCalendarTaskClick}
                         />
                     ) : (
                         <>
@@ -342,6 +371,13 @@ export default function ProjectPage() {
                     )}
                 </div>
             </div>
+            {/* Task Modal cho Calendar View */}
+            <TaskModal
+                taskId={calendarSelectedTaskId}
+                isOpen={isCalendarModalOpen}
+                onClose={handleCloseCalendarModal}
+                // Các props khác như onLabelsChange, onMembersChange có thể handler nội bộ trong Modal hoặc refresh toàn bộ như trên
+            />
         </DndContext>
     );
 }
