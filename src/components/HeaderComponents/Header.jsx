@@ -17,27 +17,51 @@ export default function Header() {
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [searchText, setSearchText] = useState('');
+    const notificationKey = `notifications_${user?._id}`;
+
     const [notifications, setNotifications] = useState(() => {
-        const stored = localStorage.getItem('notifications');
+        if (!user?._id) return [];
+        const stored = localStorage.getItem(notificationKey);
         return stored ? JSON.parse(stored) : [];
     });
     const [showNotifications, setShowNotifications] = useState(false);
 
     const [unreadCount, setUnreadCount] = useState(() => {
-        const stored = localStorage.getItem('notifications');
+        if (!user?._id) return 0;
+        const stored = localStorage.getItem(notificationKey);
         const parsed = stored ? JSON.parse(stored) : [];
         return parsed.filter((n) => !n.isRead).length;
     });
 
+    useEffect(() => {
+        if (!user?._id) {
+            setNotifications([]);
+            setUnreadCount(0);
+            return;
+        }
+        const key = `notifications_${user._id}`;
+        const stored = localStorage.getItem(key);
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            setNotifications(parsed);
+            setUnreadCount(parsed.filter((n) => !n.isRead).length);
+        } else {
+            setNotifications([]);
+            setUnreadCount(0);
+        }
+    }, [user?._id]);
+
     const menuRef = useRef(null);
     const notificationRef = useRef(null);
 
-    // Save to local storage whenever notifications change
     useEffect(() => {
-        localStorage.setItem('notifications', JSON.stringify(notifications));
-        const unread = notifications.filter((n) => !n.isRead).length;
-        setUnreadCount(unread);
-    }, [notifications]);
+        if (user?._id) {
+            const key = `notifications_${user._id}`;
+            localStorage.setItem(key, JSON.stringify(notifications));
+            const unread = notifications.filter((n) => !n.isRead).length;
+            setUnreadCount(unread);
+        }
+    }, [notifications, user?._id]);
 
     // Listen for reminder notifications
     useEffect(() => {
