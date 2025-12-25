@@ -64,7 +64,10 @@ const Toast = ({ message, type = 'info', onClose, duration = 3000 }) => {
                 <div className="shrink-0">{icons[type]}</div>
                 <p className="flex-1 text-sm font-medium">{message}</p>
                 {onClose && (
-                    <button onClick={onClose} className="shrink-0 ml-2 text-gray-400 hover:text-gray-600 transition">
+                    <button
+                        onClick={onClose}
+                        className={`${styles[type]} shrink-0 ml-2 text-gray-400 hover:text-gray-600 transition`}
+                    >
                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path
                                 fillRule="evenodd"

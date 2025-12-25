@@ -18,8 +18,8 @@ export default function AddListForm({ onSaveList }) {
         return (
             <button
                 onClick={() => setIsEditing(true)}
-                // SỬA ĐỔI: Đổi nền/chữ sang màu sáng
-                className="flex-shrink-0 w-[300px] h-12 flex items-center p-4 bg-gray-900/5 hover:bg-gray-900/10 text-gray-700 rounded-xl transition-colors"
+                // SỬA ĐỔI: Đổi nền/chữ sang màu sáng (Style Add Card của ListComponent)
+                className="flex-shrink-0 w-[300px] h-12 flex items-center p-4 bg-white hover:bg-gray-50 text-gray-700 rounded-xl shadow-sm border border-gray-200 transition-all duration-200 hover:scale-[1.02] active:scale-95"
             >
                 <Icon name="add" className="mr-2" />
                 Thêm danh sách khác

@@ -11,6 +11,12 @@ const Icon = ({ name, className = '' }) => <span className={`material-icons ${cl
 export default function ListComponent({ list, onListDeleted, onListTitleUpdated }) {
     // Lấy tasks từ prop (list.tasks từ API sẽ là mảng các task)
     const [tasks, setTasks] = useState(list.tasks || []);
+
+    // Sync state with props when list.tasks changes (e.g. after view switch reload)
+    useEffect(() => {
+        setTasks(list.tasks || []);
+    }, [list.tasks]);
+
     const [taskLabels, setTaskLabels] = useState({}); // { taskId: [labels] }
     const [taskMembers, setTaskMembers] = useState({}); // { taskId: [members] }
     const [showAddTaskForm, setShowAddTaskForm] = useState(false);
@@ -266,38 +272,53 @@ export default function ListComponent({ list, onListDeleted, onListTitleUpdated 
 
     return (
         // Thẻ div bên ngoài (wrapper) cho phép co giãn
-        <div ref={setNodeRef} style={style} className="flex-shrink-0 w-[300px] relative">
-            <div className="flex flex-col max-h-full bg-gray-100 rounded-lg p-4 shadow-sm border border-gray-200">
+        <div ref={setNodeRef} style={style} className="flex-shrink-0 w-[280px] relative">
+            <div className="flex flex-col max-h-full bg-[#F1F2F4] rounded-xl px-3 py-3 shadow-sm border border-transparent mx-1">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-4 flex-shrink-0">
+                <div className="flex justify-between items-start mb-2 flex-shrink-0 group/header relative pl-1 pr-1">
                     {isEditingTitle ? (
-                        <input
+                        <textarea
                             ref={titleInputRef}
-                            type="text"
                             value={newTitle}
                             onChange={(e) => setNewTitle(e.target.value)}
                             onKeyDown={handleTitleKeyDown}
                             onBlur={handleTitleSave} // Tự động lưu khi click ra ngoài
-                            className="text-lg font-semibold text-gray-900 w-full p-0 border-b-2 border-blue-500 focus:outline-none"
+                            className="text-[15px] font-semibold text-gray-700 w-full p-1 bg-white border border-blue-500 rounded focus:outline-none resize-none overflow-hidden h-[30px]"
+                            rows={1}
                         />
                     ) : (
-                        <h2
+                        <div
                             {...attributes}
                             {...listeners}
-                            className="text-left text-lg font-semibold text-gray-900 cursor-grab w-full"
+                            onClick={() => {
+                                // Double click logic could be added here later
+                            }}
+                            className="text-left text-[15px] font-semibold text-gray-700 cursor-grab active:cursor-grabbing w-full py-1 px-1 -ml-1 rounded truncate hover:bg-gray-200/50 transition-colors"
                         >
                             {list.title}
-                        </h2>
+                        </div>
                     )}
-                    <button
-                        ref={buttonRef}
-                        onClick={() => setIsMenuOpen((prev) => !prev)}
-                        className="bg-gray-900/5 hover:bg-gray-900/10 text-gray-700 p-1 rounded-md transition-colors border border-gray-200 shadow-sm"
+                    <div
+                        className={`relative ml-1 transition-opacity ${isMenuOpen ? 'opacity-100' : 'opacity-0 group-hover/header:opacity-100'}`}
                     >
-                        <Icon name="more_horiz" />
-                    </button>
+                        <button
+                            ref={buttonRef}
+                            onClick={() => setIsMenuOpen((prev) => !prev)}
+                            className="bg-white hover:bg-gray-50 text-gray-500 hover:text-gray-700 p-1 rounded shadow-sm border border-gray-200 transition-colors"
+                        >
+                            <span className="material-icons text-sm">more_horiz</span>
+                        </button>
+
+                        {/* List Menu Popup */}
+                        {isMenuOpen && (
+                            <div ref={menuRef} className="absolute top-full right-0 mt-1 z-50">
+                                <ListMenu onDelete={handleDeleteList} onRename={handleRenameClick} />
+                            </div>
+                        )}
+                    </div>
                 </div>
-                <div className="flex-grow overflow-y-auto pr-1">
+
+                <div className="flex-grow overflow-y-auto pr-1 custom-scrollbar">
                     {tasks.map((task) => (
                         <TaskCard
                             key={task._id}
@@ -314,29 +335,34 @@ export default function ListComponent({ list, onListDeleted, onListTitleUpdated 
 
                     {/* Form thêm task */}
                     {showAddTaskForm && (
-                        // SỬA ĐỔI: Nền form
-                        <div className="bg-white rounded-lg p-2.5 shadow-sm mt-2 border border-gray-200">
+                        <div className="bg-white rounded-lg p-2 shadow-sm mt-2 border border-blue-500 animate-in fade-in zoom-in-95 duration-200">
                             <textarea
-                                // SỬA ĐỔI: Nền, chữ, viền
-                                className="w-full bg-white text-gray-900 p-2.5 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                                className="w-full text-sm text-gray-800 placeholder-gray-400 p-1 bg-transparent focus:outline-none resize-none"
                                 placeholder="Nhập tiêu đề cho thẻ này..."
                                 value={newTaskTitle}
                                 onChange={(e) => setNewTaskTitle(e.target.value)}
                                 rows={3}
                                 autoFocus
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        handleAddTask();
+                                    }
+                                }}
                             />
-                            <div className="flex items-center mt-2.5">
+                            <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100">
                                 <button
                                     onClick={handleAddTask}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-3.5 rounded-md text-sm transition-colors"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-1.5 px-3 rounded text-xs transition-colors shadow-sm"
                                 >
                                     Thêm thẻ
                                 </button>
                                 <button
+                                    type="button"
                                     onClick={handleToggleAddTaskForm}
-                                    className="text-gray-500 bg-gray-900/7 hover:bg-gray-900/10 py-1 px-2 rounded-md ml-2 transition-colors"
+                                    className="bg-white hover:bg-gray-100 text-gray-500 hover:text-gray-700 p-1.5 rounded transition-colors"
                                 >
-                                    <Icon name="close" className="text-xl" />
+                                    <Icon name="close" className="text-lg" />
                                 </button>
                             </div>
                         </div>
@@ -347,19 +373,15 @@ export default function ListComponent({ list, onListDeleted, onListTitleUpdated 
                 {!showAddTaskForm && (
                     <button
                         onClick={handleToggleAddTaskForm}
-                        className="flex items-center w-full mt-2 p-2.5 bg-gray-900/5 hover:bg-gray-900/10 text-gray-700 rounded-lg transition-colors flex-shrink-0"
+                        className="flex items-center w-full mt-2 p-2 bg-white hover:bg-gray-50 shadow-sm border border-gray-200 text-gray-600 rounded-lg transition-colors flex-shrink-0 group/add"
                     >
-                        <Icon name="add" className="mr-2 text-lg" />
-                        <span className="text-sm font-medium">Thêm thẻ</span>
+                        <span className="material-icons text-lg mr-2 text-gray-500 group-hover/add:text-gray-800">
+                            add
+                        </span>
+                        <span className="text-sm font-medium group-hover/add:text-gray-800">Thêm thẻ</span>
                     </button>
                 )}
             </div>
-            {isMenuOpen && (
-                <div ref={menuRef}>
-                    {/* ⚠️ LƯU Ý: Bạn sẽ cần sửa file ListMenu.jsx sang light mode */}
-                    <ListMenu onDelete={handleDeleteList} onRename={handleRenameClick} />
-                </div>
-            )}
 
             {/* Task Modal */}
             <TaskModal

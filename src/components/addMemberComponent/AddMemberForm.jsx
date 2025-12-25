@@ -49,26 +49,37 @@ export default function AddMemberForm({ projectId, onClose }) {
         <div
             className="
                 fixed inset-0 
-                bg-white/60 backdrop-blur-sm 
+                bg-black/40 backdrop-blur-sm 
                 flex justify-center items-center 
                 z-50
+                animate-in fade-in duration-200
             "
         >
-            <div className="bg-white text-gray-800 p-6 rounded-lg w-[500px] shadow-xl border border-gray-200">
+            <div className="bg-white text-gray-800 p-6 rounded-xl w-[500px] shadow-2xl border border-gray-100 transform transition-all scale-100">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold">Thêm thành viên</h2>
+                <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-100">
+                    <h2 className="text-lg font-semibold text-gray-800">Thêm thành viên</h2>
                     <button
                         onClick={onClose}
                         className="
-                        bg-gray-200 hover:bg-gray-400
-                        text-gray-500 hover:text-gray-700 
-                        text-lg font-bold leading-none
-                        transition
+                        p-1 rounded-md
+                        text-gray-400 hover:text-gray-600 hover:bg-gray-100
+                        transition-colors
                     "
                         aria-label="Đóng"
                     >
-                        ✕
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                        >
+                            <path
+                                fillRule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clipRule="evenodd"
+                            />
+                        </svg>
                     </button>
                 </div>
 
@@ -78,8 +89,9 @@ export default function AddMemberForm({ projectId, onClose }) {
                         type="text"
                         value={searchText}
                         onChange={(e) => setSearchText(e.target.value)}
-                        placeholder="Nhập email hoặc tên..."
-                        className="flex-1 p-2 rounded bg-gray-50 border border-gray-300 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                        placeholder="Nhập email hoặc tên thành viên..."
+                        className="flex-1 px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-sm"
+                        autoFocus
                     />
                 </div>
 

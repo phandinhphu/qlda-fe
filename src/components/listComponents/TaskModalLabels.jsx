@@ -110,177 +110,146 @@ export default function TaskModalLabels({ task, onUpdate, onLabelsChange }) {
     };
 
     return (
-        <div className="bg-white rounded p-4">
-            <div className="flex items-center gap-2 mb-3">
-                <Icon name="label" className="text-gray-700" />
-                <h3 className="font-semibold text-gray-800">Nhãn</h3>
-            </div>
+        <div className="mb-4">
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Nhãn</h3>
 
             {/* Hiển thị danh sách labels */}
-            {labels.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-3">
-                    {labels.map((label) => (
-                        <div
-                            key={label._id}
-                            className="group relative flex items-center gap-2 px-3 py-1.5 rounded text-sm font-medium text-white min-w-[80px]"
-                            style={{ backgroundColor: label.color }}
-                        >
-                            {editingLabelId === label._id ? (
-                                <div className="absolute top-full left-0 mt-2 z-10 bg-white border border-gray-300 rounded-lg shadow-lg p-3 min-w-[300px]">
-                                    <input
-                                        type="text"
-                                        value={editLabelName}
-                                        onChange={(e) => setEditLabelName(e.target.value)}
-                                        className="w-full bg-white text-gray-800 px-2 py-1 rounded text-sm border border-gray-300 focus:outline-none focus:border-blue-400 mb-2"
-                                        autoFocus
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                handleUpdateLabel(label._id);
-                                            }
-                                            if (e.key === 'Escape') {
-                                                handleCancelEdit();
-                                            }
-                                        }}
-                                    />
-                                    <div className="mb-2">
-                                        <label className="block text-xs text-gray-600 mb-1">Chọn màu:</label>
-                                        <div className="flex flex-wrap gap-2">
-                                            {DEFAULT_COLORS.map((color) => (
-                                                <button
-                                                    key={color}
-                                                    onClick={() => setEditLabelColor(color)}
-                                                    className={`w-6 h-6 rounded border-2 transition-all ${
-                                                        editLabelColor === color
-                                                            ? 'border-gray-800 scale-110'
-                                                            : 'border-gray-300 hover:border-gray-500'
-                                                    }`}
-                                                    style={{ backgroundColor: color }}
-                                                    title={color}
-                                                />
-                                            ))}
-                                            <input
-                                                type="color"
-                                                value={editLabelColor}
-                                                onChange={(e) => setEditLabelColor(e.target.value)}
-                                                className="w-6 h-6 rounded border border-gray-300 cursor-pointer"
-                                                title="Chọn màu tùy chỉnh"
+            <div className="flex flex-wrap gap-2 mb-2">
+                {labels.map((label) => (
+                    <div
+                        key={label._id}
+                        className="group relative flex items-center gap-2 px-3 py-1.5 rounded text-sm font-semibold text-white min-h-[32px] cursor-pointer hover:opacity-90 transition-opacity"
+                        style={{ backgroundColor: label.color }}
+                        onClick={() => handleStartEdit(label)}
+                    >
+                        {editingLabelId === label._id ? (
+                            <div
+                                className="absolute top-full left-0 mt-2 z-20 bg-white border border-gray-300 rounded-lg shadow-xl p-3 min-w-[280px]"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <h4 className="text-sm font-semibold text-gray-700 mb-2 border-b pb-1">Sửa nhãn</h4>
+                                <input
+                                    type="text"
+                                    value={editLabelName}
+                                    onChange={(e) => setEditLabelName(e.target.value)}
+                                    className="w-full bg-white text-gray-800 px-2 py-1.5 rounded text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3"
+                                    autoFocus
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            handleUpdateLabel(label._id);
+                                        }
+                                        if (e.key === 'Escape') {
+                                            handleCancelEdit();
+                                        }
+                                    }}
+                                />
+                                <div className="mb-3">
+                                    <label className="block text-xs font-medium text-gray-600 mb-1.5">Chọn màu</label>
+                                    <div className="grid grid-cols-5 gap-2">
+                                        {DEFAULT_COLORS.map((color) => (
+                                            <button
+                                                key={color}
+                                                onClick={() => setEditLabelColor(color)}
+                                                className={`w-full aspect-square rounded cursor-pointer transition-transform hover:scale-105 ${
+                                                    editLabelColor === color ? 'ring-2 ring-offset-1 ring-gray-600' : ''
+                                                }`}
+                                                style={{ backgroundColor: color }}
+                                                title={color}
                                             />
-                                        </div>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={() => handleUpdateLabel(label._id)}
-                                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm"
-                                        >
-                                            Lưu
-                                        </button>
-                                        <button
-                                            onClick={handleCancelEdit}
-                                            className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded text-sm"
-                                        >
-                                            Hủy
-                                        </button>
+                                        ))}
                                     </div>
                                 </div>
-                            ) : (
-                                <>
-                                    <span className="flex-1">{label.label_name}</span>
-                                    <div className="opacity-0 group-hover:opacity-100 flex gap-1 transition-opacity">
-                                        <button
-                                            onClick={() => handleStartEdit(label)}
-                                            className="bg-white/20 hover:bg-white/30 p-1 rounded"
-                                            title="Chỉnh sửa"
-                                        >
-                                            <Icon name="edit" className="text-xs" />
-                                        </button>
-                                        <button
-                                            onClick={() => handleDeleteLabel(label._id)}
-                                            className="bg-white/20 hover:bg-white/30 p-1 rounded"
-                                            title="Xóa"
-                                        >
-                                            <Icon name="delete" className="text-xs" />
-                                        </button>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {/* Form thêm label mới */}
-            {showAddForm ? (
-                <div className="border border-gray-300 rounded p-3 bg-gray-50">
-                    <input
-                        type="text"
-                        value={newLabelName}
-                        onChange={(e) => setNewLabelName(e.target.value)}
-                        placeholder="Tên nhãn"
-                        className="w-full border border-gray-300 rounded p-2 text-sm focus:outline-none focus:border-blue-400 mb-2"
-                        autoFocus
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                handleAddLabel();
-                            }
-                            if (e.key === 'Escape') {
-                                setNewLabelName('');
-                                setShowAddForm(false);
-                            }
-                        }}
-                    />
-
-                    {/* Chọn màu */}
-                    <div className="mb-3">
-                        <label className="block text-xs text-gray-600 mb-2">Chọn màu:</label>
-                        <div className="flex flex-wrap gap-2">
-                            {DEFAULT_COLORS.map((color) => (
+                                <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-100">
+                                    <button
+                                        onClick={() => handleUpdateLabel(label._id)}
+                                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
+                                    >
+                                        Lưu
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeleteLabel(label._id)}
+                                        className="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded text-xs font-medium transition-colors"
+                                    >
+                                        Xóa
+                                    </button>
+                                </div>
                                 <button
-                                    key={color}
-                                    onClick={() => setNewLabelColor(color)}
-                                    className={`w-8 h-8 rounded border-2 transition-all ${
-                                        newLabelColor === color
-                                            ? 'border-gray-800 scale-110'
-                                            : 'border-gray-300 hover:border-gray-500'
-                                    }`}
-                                    style={{ backgroundColor: color }}
-                                    title={color}
-                                />
-                            ))}
-                            <input
-                                type="color"
-                                value={newLabelColor}
-                                onChange={(e) => setNewLabelColor(e.target.value)}
-                                className="w-8 h-8 rounded border border-gray-300 cursor-pointer"
-                                title="Chọn màu tùy chỉnh"
-                            />
-                        </div>
+                                    onClick={handleCancelEdit}
+                                    className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+                                >
+                                    <Icon name="close" className="text-base" />
+                                </button>
+                            </div>
+                        ) : (
+                            <span className="truncate max-w-[150px]">{label.label_name}</span>
+                        )}
                     </div>
+                ))}
 
-                    <div className="flex gap-2">
-                        <button
-                            onClick={handleAddLabel}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm transition-colors"
-                        >
-                            Thêm
-                        </button>
-                        <button
-                            onClick={() => {
-                                setNewLabelName('');
-                                setShowAddForm(false);
-                            }}
-                            className="text-gray-700 px-4 py-2 rounded text-sm transition-colors hover:bg-gray-200"
-                        >
-                            Hủy
-                        </button>
-                    </div>
-                </div>
-            ) : (
+                {/* Add Button */}
                 <button
                     onClick={() => setShowAddForm(true)}
-                    className="w-full text-left text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 p-3 rounded border border-gray-300"
+                    className="bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1.5 rounded transition-colors flex items-center justify-center min-h-[32px] border border-gray-200"
                 >
-                    + Thêm nhãn
+                    <Icon name="add" className="text-lg" />
                 </button>
+            </div>
+
+            {/* Form thêm label mới - Popover style */}
+            {showAddForm && (
+                <div className="relative">
+                    <div className="absolute top-0 left-0 z-20 bg-white border border-gray-300 rounded-lg shadow-xl p-3 min-w-[280px]">
+                        <div className="flex justify-between items-center mb-2 border-b pb-1">
+                            <h4 className="text-sm font-semibold text-gray-700">Tạo nhãn mới</h4>
+                            <button onClick={() => setShowAddForm(false)} className="text-gray-500 hover:text-gray-700">
+                                <Icon name="close" className="text-base" />
+                            </button>
+                        </div>
+
+                        <input
+                            type="text"
+                            value={newLabelName}
+                            onChange={(e) => setNewLabelName(e.target.value)}
+                            placeholder="Tên nhãn"
+                            className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3"
+                            autoFocus
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleAddLabel();
+                                }
+                                if (e.key === 'Escape') {
+                                    setNewLabelName('');
+                                    setShowAddForm(false);
+                                }
+                            }}
+                        />
+
+                        {/* Chọn màu */}
+                        <div className="mb-3">
+                            <label className="block text-xs font-medium text-gray-600 mb-1.5">Chọn màu</label>
+                            <div className="grid grid-cols-5 gap-2">
+                                {DEFAULT_COLORS.map((color) => (
+                                    <button
+                                        key={color}
+                                        onClick={() => setNewLabelColor(color)}
+                                        className={`w-full aspect-square rounded cursor-pointer transition-transform hover:scale-105 ${
+                                            newLabelColor === color ? 'ring-2 ring-offset-1 ring-gray-600' : ''
+                                        }`}
+                                        style={{ backgroundColor: color }}
+                                        title={color}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={handleAddLabel}
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 rounded text-sm font-medium transition-colors"
+                        >
+                            Tạo mới
+                        </button>
+                    </div>
+                </div>
             )}
         </div>
     );

@@ -6,8 +6,8 @@ const Icon = ({ name, className = '' }) => <span className={`material-icons ${cl
 
 export default function DropdownMenu({ onLogout }) {
     return (
-        // Định vị menu tuyệt đối (absolute) so với cha (relative)
-        <div className="absolute top-14 right-0 w-56 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+        // Menu content - positioning handled by parent
+        <div className="bg-white rounded-lg shadow-xl border border-gray-100 py-1">
             <ul className="py-1">
                 {/* Mục "Hồ sơ" */}
                 <li>
