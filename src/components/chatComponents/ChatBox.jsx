@@ -5,6 +5,7 @@ import { useAuth } from '../../hooks/auth';
 import { Send, Smile, Paperclip, MoreVertical, Users, User } from 'lucide-react';
 
 export default function ChatBox({ room }) {
+    const [roomDetails, setRoomDetails] = useState(room || {});
     const [messages, setMessages] = useState([]);
     const [inputMessage, setInputMessage] = useState('');
     const [typing, setTyping] = useState({});
@@ -18,6 +19,7 @@ export default function ChatBox({ room }) {
     useEffect(() => {
         if (room) {
             loadMessages();
+            setRoomDetails(room);
             joinRoom(room._id);
         }
 
@@ -49,12 +51,33 @@ export default function ChatBox({ room }) {
                 return newTyping;
             });
         };
+
+        const handleMemberOnline = (data) => {
+            const { userId, status } = data;
+            console.log('User status update:', data);
+
+            setRoomDetails((prevRoom) => {
+                if (prevRoom.type === 'direct' && prevRoom.other_member && prevRoom.other_member._id === userId) {
+                    return {
+                        ...prevRoom,
+                        other_member: {
+                            ...prevRoom.other_member,
+                            is_online: status === 'online',
+                        },
+                    };
+                }
+                return prevRoom;
+            });
+        };
+
         socket.on('new_message', handleNewMessage);
         socket.on('user_typing', handleUserTyping);
+        socket.on('user-status', handleMemberOnline);
 
         return () => {
             socket.off('new_message', handleNewMessage);
             socket.off('user_typing', handleUserTyping);
+            socket.off('user-status', handleMemberOnline);
         };
     }, [socket, room]);
 
@@ -179,7 +202,11 @@ export default function ChatBox({ room }) {
                                     {room.project_id.project_name}
                                 </p>
                             )}
-                            {room.type === 'direct' && <p className="text-xs text-blue-100">Hoạt động</p>}
+                            {room.type === 'direct' && (
+                                <p className="text-sm text-blue-100">
+                                    {roomDetails.other_member?.is_online ? 'Đang hoạt động' : 'Ngoại tuyến'}
+                                </p>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -248,22 +275,6 @@ export default function ChatBox({ room }) {
             {/* Input */}
             <div className="px-6 py-4 bg-white border-t border-gray-200">
                 <div className="flex items-end gap-3">
-                    {/* Action buttons */}
-                    <div className="flex gap-2 pb-2">
-                        <button
-                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="Thêm emoji"
-                        >
-                            <Smile size={20} />
-                        </button>
-                        <button
-                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="Đính kèm file"
-                        >
-                            <Paperclip size={20} />
-                        </button>
-                    </div>
-
                     {/* Input field */}
                     <div className="flex-1">
                         <textarea
@@ -295,7 +306,11 @@ export default function ChatBox({ room }) {
 function MessageItem({ message, user }) {
     const formatTime = (dateString) => {
         const date = new Date(dateString);
+
         return date.toLocaleTimeString('vi-VN', {
+            year: '2-digit',
+            month: '2-digit',
+            day: '2-digit',
             hour: '2-digit',
             minute: '2-digit',
         });

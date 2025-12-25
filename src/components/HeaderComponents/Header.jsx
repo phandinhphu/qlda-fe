@@ -13,7 +13,7 @@ const Icon = ({ name, className = '' }) => <span className={`material-icons ${cl
 
 export default function Header() {
     const { user, logout } = useAuth();
-    const { socket } = useSocket();
+    const { socket, disconnectTracking } = useSocket();
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [searchText, setSearchText] = useState('');
@@ -52,6 +52,7 @@ export default function Header() {
     }, [user?._id]);
 
     const menuRef = useRef(null);
+
     const notificationRef = useRef(null);
 
     useEffect(() => {
@@ -130,6 +131,7 @@ export default function Header() {
         setIsMenuOpen(false); // Đóng menu trước
         try {
             await logout(); // Gọi hàm logout từ auth context
+            disconnectTracking(); // Ngắt kết nối theo dõi trực tuyến
             navigate('/login'); // Chuyển về trang login
         } catch (error) {
             console.error('Lỗi đăng xuất:', error);
