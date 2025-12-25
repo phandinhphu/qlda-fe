@@ -68,10 +68,33 @@ export default function RoomList({ onSelectRoom, selectedRoomId, projectId }) {
             });
         };
 
+        const handleMemberOnline = (data) => {
+            const { userId, status } = data;
+            console.log('User status update:', data);
+
+            setRooms((prevRooms) => {
+                const updatedRooms = prevRooms.map((room) => {
+                    if (room.type === 'direct' && room.other_member && room.other_member._id === userId) {
+                        return {
+                            ...room,
+                            other_member: {
+                                ...room.other_member,
+                                is_online: status === 'online',
+                            },
+                        };
+                    }
+                    return room;
+                });
+                return updatedRooms;
+            });
+        };
+
         socket.on('new_message', handleNewMessage);
+        socket.on('user-status', handleMemberOnline);
 
         return () => {
             socket.off('new_message', handleNewMessage);
+            socket.off('user-status', handleMemberOnline);
         };
     }, [socket, selectedRoomId]);
 
@@ -187,7 +210,7 @@ export default function RoomList({ onSelectRoom, selectedRoomId, projectId }) {
                                             <img
                                                 src={room.other_member.avatar_url}
                                                 alt={getRoomName(room)}
-                                                className="w-full h-full rounded-full object-cover"
+                                                className="w-12 h-12 rounded-full object-cover"
                                             />
                                         ) : room.type === 'group' ? (
                                             <Users className="text-white" size={20} />
@@ -199,7 +222,9 @@ export default function RoomList({ onSelectRoom, selectedRoomId, projectId }) {
                                     </div>
                                     {/* Online indicator - chỉ cho direct chat */}
                                     {room.type === 'direct' && (
-                                        <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></div>
+                                        <div
+                                            className={`absolute bottom-0 right-0 w-3.5 h-3.5 border-white rounded-full status-dot ${room.other_member?.is_online ? 'bg-green-500' : 'bg-gray-300'}`}
+                                        ></div>
                                     )}
                                 </div>
 

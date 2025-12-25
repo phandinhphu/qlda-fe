@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }) => {
             try {
                 const currentUser = await authServices.getCurrentUser();
                 setUser(currentUser.user);
+                console.log('Fetched user:', currentUser.user);
             } catch (error) {
                 console.error('Error fetching user:', error);
                 setUser(null);

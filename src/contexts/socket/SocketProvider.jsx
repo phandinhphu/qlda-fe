@@ -3,10 +3,13 @@ import io from 'socket.io-client';
 import SocketContext from './Context';
 import { API_URL } from '../../utils/constants';
 import { getSocketToken } from '../../services/socketAuthService';
+import { useAuth } from '../../hooks/auth';
 
 export default function SocketProvider({ children }) {
     const [socket, setSocket] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
+
+    const { user } = useAuth();
 
     useEffect(() => {
         const initSocket = async () => {
@@ -66,6 +69,34 @@ export default function SocketProvider({ children }) {
         initSocket();
     }, []);
 
+    const onlineTracking = useCallback(
+        (userId) => {
+            if (userId) {
+                socket.emit('user_online', userId);
+            }
+        },
+        [socket],
+    );
+
+    const disconnectTracking = useCallback(() => {
+        if (socket) {
+            socket.emit('user_offline');
+        }
+    }, [socket]);
+
+    useEffect(() => {
+        console.log('AuthProvider useEffect - socket or user changed:', { socket, user });
+        if (socket && user) {
+            onlineTracking(user._id);
+        }
+
+        return () => {
+            if (socket && user) {
+                disconnectTracking(user._id);
+            }
+        };
+    }, [socket, user, onlineTracking, disconnectTracking]);
+
     const joinRoom = useCallback(
         (roomId) => {
             if (socket) {
@@ -105,6 +136,8 @@ export default function SocketProvider({ children }) {
     const value = {
         socket,
         isConnected,
+        onlineTracking,
+        disconnectTracking,
         joinRoom,
         leaveRoom,
         sendMessage,

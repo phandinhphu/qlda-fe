@@ -3,6 +3,7 @@ import { useAuth } from '../../hooks/auth';
 import { useNavigate } from 'react-router-dom';
 import DropdownMenu from './DropDownMenu';
 import { Link } from 'react-router-dom';
+import { useSocket } from '../../hooks/socket';
 const Icon = ({ name, className = '' }) => <span className={`material-icons ${className}`}>{name}</span>;
 
 export default function Header() {
@@ -11,6 +12,9 @@ export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [searchText, setSearchText] = useState('');
     const menuRef = useRef(null);
+
+    const { disconnectTracking } = useSocket();
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             // Nếu menu đang mở VÀ click không nằm trong 'menuRef'
@@ -40,6 +44,7 @@ export default function Header() {
         setIsMenuOpen(false); // Đóng menu trước
         try {
             await logout(); // Gọi hàm logout từ auth context
+            disconnectTracking(); // Ngắt kết nối theo dõi trực tuyến
             navigate('/login'); // Chuyển về trang login
         } catch (error) {
             console.error('Lỗi đăng xuất:', error);
