@@ -88,48 +88,50 @@ export default function TaskModalSteps({ task, onUpdate }) {
 
             {/* Add Step Form */}
             {showAddStep ? (
-                <div className="mb-3">
-                    <textarea
-                        value={newStepTitle}
-                        onChange={(e) => setNewStepTitle(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !e.shiftKey) {
-                                e.preventDefault();
-                                handleAddStep();
-                            }
-                            if (e.key === 'Escape') {
-                                setNewStepTitle('');
-                                setShowAddStep(false);
-                            }
-                        }}
-                        placeholder="Thêm mô tả chi tiết..."
-                        className="w-full border border-gray-300 rounded p-3 text-sm focus:outline-none focus:border-blue-400 mb-2 min-h-20 bg-white"
-                        autoFocus
-                    />
-                    <div className="flex gap-2">
-                        <button
-                            onClick={handleAddStep}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm transition-colors"
-                        >
-                            Thêm
-                        </button>
-                        <button
-                            onClick={() => {
-                                setNewStepTitle('');
-                                setShowAddStep(false);
+                <div className="mb-3 animate-fadeIn">
+                    <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden ring-2 ring-blue-500/20 focus-within:ring-blue-500/50 transition-all duration-200">
+                        <textarea
+                            value={newStepTitle}
+                            onChange={(e) => setNewStepTitle(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleAddStep();
+                                }
+                                if (e.key === 'Escape') {
+                                    setNewStepTitle('');
+                                    setShowAddStep(false);
+                                }
                             }}
-                            className="text-gray-700 px-4 py-2 rounded text-sm transition-colors"
-                        >
-                            ✕
-                        </button>
+                            placeholder="Thêm một mục..."
+                            className="w-full border-none p-4 focus:outline-none focus:ring-0 min-h-[80px] text-sm text-gray-800 resize-y placeholder-gray-400 leading-relaxed bg-transparent"
+                            autoFocus
+                        />
+                        <div className="flex items-center justify-end px-3 py-2 bg-gray-50 border-t border-gray-100 gap-2">
+                            <button
+                                onClick={handleAddStep}
+                                className="h-8 bg-blue-600 hover:bg-blue-700 text-white px-4 rounded text-sm font-medium transition-colors shadow-sm flex items-center gap-1"
+                            >
+                                <span>Thêm</span>
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setNewStepTitle('');
+                                    setShowAddStep(false);
+                                }}
+                                className="h-8 bg-gray-200 text-gray-600 hover:bg-gray-300 px-3 rounded text-sm transition-colors font-medium flex items-center justify-center"
+                            >
+                                <Icon name="close" className="text-lg" />
+                            </button>
+                        </div>
                     </div>
                 </div>
             ) : (
                 <button
                     onClick={() => setShowAddStep(true)}
-                    className="w-full text-left text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 p-3 rounded mb-3 border border-gray-300"
+                    className="w-full text-left text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 p-3 rounded mb-3 border border-gray-200 transition-colors font-medium"
                 >
-                    Thêm mô tả chi tiết...
+                    Thêm một mục
                 </button>
             )}
 

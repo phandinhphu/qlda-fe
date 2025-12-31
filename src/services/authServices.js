@@ -2,7 +2,12 @@ import * as httpRequest from '../utils/httpRequest';
 
 export const login = async (email, password) => {
     try {
-        await httpRequest.post('/auth/login', { email, password });
+        const response = await httpRequest.post('/auth/login', { email, password });
+        // Nếu backend trả về token trong response, lưu vào localStorage
+        if (response.data.token) {
+            localStorage.setItem('socket_token', response.data.token);
+        }
+        return response.data;
     } catch (error) {
         if (error.response && error.response.data.message) {
             throw new Error(error.response.data.message);
@@ -29,6 +34,8 @@ export const register = async (user) => {
 export const logout = async () => {
     try {
         await httpRequest.post('/auth/logout');
+        // Xóa token khỏi localStorage khi logout
+        localStorage.removeItem('socket_token');
     } catch (error) {
         if (error.response && error.response.data.message) {
             throw new Error(error.response.data.message);

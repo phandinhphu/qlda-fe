@@ -83,7 +83,7 @@ export default function TaskModalAttachments({ taskId, newFile }) {
 
                             {/* MENU */}
                             <button
-                                className="text-gray-600 bg-gray-300 hover:bg-gray-400 rounded-md px-2 py-1 text-sm transition"
+                                className="text-gray-600 bg-gray-100 rounded-md px-2 py-1 text-sm transition"
                                 onClick={() => console.log('open menu for file:', file._id)}
                             >
                                 <span className="text-xl">⋯</span>

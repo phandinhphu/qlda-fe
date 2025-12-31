@@ -7,13 +7,7 @@ import Spinner from '../Spinner';
 function RainbowGradient() {
     const gradientId = 'rainbowGradient';
     const colors = [
-        { offset: '0%', color: '#FF0000' }, // Đỏ
-        { offset: '17%', color: '#FFA500' }, // Cam
-        { offset: '33%', color: '#FFFF00' }, // Vàng
-        { offset: '50%', color: '#008000' }, // Lục
-        { offset: '67%', color: '#0000FF' }, // Lam
-        { offset: '83%', color: '#4B0082' }, // Chàm
-        { offset: '100%', color: '#EE82EE' }, // Tím
+        { offset: '100%', color: '#3c75cbff' }, // Tím
     ];
 
     return (

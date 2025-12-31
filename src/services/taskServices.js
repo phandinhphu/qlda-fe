@@ -28,6 +28,48 @@ export const createTask = async (taskData) => {
     }
 };
 
+export const getAllTask = async (project_id) => {
+    try {
+        const response = await httpRequest.get(`/tasks/project/${project_id}`);
+        return response.data; // Trả về danh sách task
+    } catch (error) {
+        console.error('Error in getAllTask:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể tải danh sách công việc.');
+        }
+    }
+};
+
+export const setDueDate = async (taskId, due_date) => {
+    try {
+        const response = await httpRequest.patch(`/tasks/${taskId}/due-date`, { due_date });
+        return response.data; // Trả về task đã cập nhật
+    } catch (error) {
+        console.error('Error in setDueDate:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể đặt ngày hết hạn.');
+        }
+    }
+};
+
+export const setReminderDate = async (taskId, reminder_date) => {
+    try {
+        const response = await httpRequest.patch(`/tasks/${taskId}/reminder-date`, { reminder_date });
+        return response.data; // Trả về task đã cập nhật
+    } catch (error) {
+        console.error('Error in setReminderDate:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể đặt ngày nhắc.');
+        }
+    }
+};
+
 /**
  * @desc Cập nhật một Task (thẻ)
  * @param {string} taskId ID của Task
@@ -206,6 +248,48 @@ export const addComment = async (taskId, commentData) => {
             throw new Error(error.response.data.message);
         } else {
             throw new Error('Không thể gửi bình luận.');
+        }
+    }
+};
+
+export const getComments = async (taskId) => {
+    try {
+        const response = await httpRequest.get(`/tasks/${taskId}/comments`);
+        return response.data.data; // Trả về danh sách comments
+    } catch (error) {
+        console.error('Error in getComments:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể tải danh sách bình luận.');
+        }
+    }
+};
+
+export const updateComment = async (taskId, commentId, commentData) => {
+    try {
+        const response = await httpRequest.put(`/tasks/${taskId}/comments/${commentId}`, commentData);
+        return response.data.data; // Trả về comment đã cập nhật
+    } catch (error) {
+        console.error('Error in updateComment:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể cập nhật bình luận.');
+        }
+    }
+};
+
+export const deleteComment = async (taskId, commentId) => {
+    try {
+        const response = await httpRequest.del(`/tasks/${taskId}/comments/${commentId}`);
+        return response.data; // Trả về kết quả xóa
+    } catch (error) {
+        console.error('Error in deleteComment:', error);
+        if (error.response && error.response.data.message) {
+            throw new Error(error.response.data.message);
+        } else {
+            throw new Error('Không thể xóa bình luận.');
         }
     }
 };
