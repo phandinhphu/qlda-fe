@@ -299,11 +299,7 @@ export const uploadTaskFile = async (taskId, file) => {
     formData.append('file', file);
 
     try {
-        const response = await httpRequest.post(`/tasks/${taskId}/uploads`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
+        const response = await httpRequest.post(`/tasks/${taskId}/uploads`, formData);
         return response.data;
     } catch (error) {
         console.error('lỗi ở taskService - uploadFile', error);
