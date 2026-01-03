@@ -54,7 +54,9 @@ export default function TaskModalAttachments({ taskId, newFile }) {
                             <div className="flex items-center gap-3 flex-1">
                                 <Icon
                                     name={
-                                        file.file_url.endsWith('.png') || file.file_url.endsWith('.jpg')
+                                        file.resource_type === 'image' ||
+                                        file.file_url.endsWith('.png') ||
+                                        file.file_url.endsWith('.jpg')
                                             ? 'image'
                                             : file.file_url.endsWith('.pdf')
                                               ? 'picture_as_pdf'
@@ -65,12 +67,16 @@ export default function TaskModalAttachments({ taskId, newFile }) {
 
                                 <div className="flex flex-col">
                                     <a
-                                        href={file.file_url}
+                                        href={
+                                            file.resource_type === 'raw'
+                                                ? `https://docs.google.com/viewer?url=${encodeURIComponent(file.file_url)}&embedded=true`
+                                                : file.file_url
+                                        }
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-sm font-medium text-blue-600 hover:underline max-w-[180px] truncate"
                                     >
-                                        {file.file_url.split('/').pop()}
+                                        {file.file_name}
                                     </a>
                                     <div className="text-xs text-gray-500">{file.uploaded_by.name}</div>
                                 </div>
@@ -81,13 +87,25 @@ export default function TaskModalAttachments({ taskId, newFile }) {
                                 {formatDate(file.uploaded_at)}
                             </div>
 
-                            {/* MENU */}
-                            <button
-                                className="text-gray-600 bg-gray-100 rounded-md px-2 py-1 text-sm transition"
-                                onClick={() => console.log('open menu for file:', file._id)}
-                            >
-                                <span className="text-xl">⋯</span>
-                            </button>
+                            {/* ACTIONS */}
+                            <div className="flex items-center gap-2">
+                                {file.resource_type === 'raw' && (
+                                    <a
+                                        href={file.file_url}
+                                        download
+                                        className="text-gray-600 hover:text-blue-600 bg-gray-200 hover:bg-blue-100 rounded-md px-2 py-1 transition"
+                                        title="Tải xuống"
+                                    >
+                                        <Icon name="download" className="text-sm" />
+                                    </a>
+                                )}
+                                <button
+                                    className="text-gray-600 bg-gray-100 rounded-md px-2 py-1 text-sm transition"
+                                    onClick={() => console.log('open menu for file:', file._id)}
+                                >
+                                    <span className="text-xl">⋯</span>
+                                </button>
+                            </div>
                         </div>
                     ))
                 )}
