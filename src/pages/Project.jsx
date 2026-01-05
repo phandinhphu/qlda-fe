@@ -36,7 +36,6 @@ export default function ProjectPage() {
     const [filterType, setFilterType] = useState('all'); // 'all', 'list', 'task', 'member'
     const [dateFilter, setDateFilter] = useState(''); // 'today', 'week', 'month' hoặc ''
 
-    // State cho Modal khi ở Calendar View
     const [calendarSelectedTaskId, setCalendarSelectedTaskId] = useState(null);
     const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
 
@@ -153,7 +152,6 @@ export default function ProjectPage() {
         }
     };
 
-    // Handler cho click vào event trên lịch
     const handleCalendarTaskClick = (taskId) => {
         setCalendarSelectedTaskId(taskId);
         setIsCalendarModalOpen(true);
@@ -162,12 +160,10 @@ export default function ProjectPage() {
     const handleCloseCalendarModal = async () => {
         setIsCalendarModalOpen(false);
         setCalendarSelectedTaskId(null);
-        // Refresh tasks để cập nhật thay đổi (ví dụ đổi ngày, đổi tên)
+
         try {
             const allTasks = await getAllTask(projectId);
             setTasks(allTasks);
-            // Cũng cần refresh lists nếu task bị di chuyển list (tuy nhiên ở calendar view thường chỉ quan tâm tasks)
-            // Nhưng để đồng bộ khi switch về board view, ta nên refresh cả lists
             const data = await getListsByProject(projectId);
             setLists(data);
         } catch (error) {
@@ -228,6 +224,7 @@ export default function ProjectPage() {
     };
 
     if (loading) return <div className="text-gray-700 p-8">Đang tải project...</div>;
+    if (!project) return <div className="text-red-500 p-8">Lỗi: Không tìm thấy dự án hoặc có lỗi xảy ra.</div>;
 
     return (
         <DndContext

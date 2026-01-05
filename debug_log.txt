@@ -1,0 +1,25 @@
+﻿
+[1m[46m RUN [49m[22m [36mv4.0.4 [39m[90mD:/Study/PTPMCN/cuoiKy/frontend[39m
+
+ [31mâ¯[39m src/__tests__/DuyToanSuit.test.jsx [2m([22m[2m15 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 5546[2mms[22m[39m
+       [32mâœ“[39m nĂªn hiá»ƒn thá»‹ tráº¡ng thĂ¡i Ä‘ang táº£i ban Ä‘áº§u[32m 33[2mms[22m[39m
+       [32mâœ“[39m nĂªn hiá»ƒn thá»‹ thĂ´ng tin dá»± Ă¡n vĂ  danh sĂ¡ch sau khi táº£i xong[32m 51[2mms[22m[39m
+       [32mâœ“[39m nĂªn chuyá»ƒn Ä‘á»•i giá»¯a giao diá»‡n Báº£ng vĂ  Lá»‹ch[32m 48[2mms[22m[39m
+       [32mâœ“[39m nĂªn lá»c danh sĂ¡ch vĂ  cĂ´ng viá»‡c theo tá»« khĂ³a[32m 30[2mms[22m[39m
+       [32mâœ“[39m nĂªn thĂªm danh sĂ¡ch má»›i[32m 37[2mms[22m[39m
+       [32mâœ“[39m nĂªn hiá»ƒn thá»‹ spinner táº£i khi má»›i vĂ o[32m 5[2mms[22m[39m
+       [32mâœ“[39m nĂªn hiá»ƒn thá»‹ thĂ´ng tin ngÆ°á»i dĂ¹ng Ä‘Ăºng[32m 14[2mms[22m[39m
+       [32mâœ“[39m nĂªn áº©n/hiá»‡n dá»± Ă¡n Ä‘Ă£ hoĂ n thĂ nh khi báº¥m nĂºt[32m 196[2mms[22m[39m
+       [32mâœ“[39m nĂªn hiá»ƒn thá»‹ sá»± kiá»‡n trĂªn lá»‹ch Ä‘Ăºng[32m 4[2mms[22m[39m
+       [32mâœ“[39m nĂªn chuyá»ƒn Ä‘á»•i giá»¯a cĂ¡c View (thĂ¡ng/lá»‹ch biá»ƒu)[32m 6[2mms[22m[39m
+       [32mâœ“[39m nĂªn gá»i onTaskClick khi báº¥m vĂ o sá»± kiá»‡n[32m 3[2mms[22m[39m
+       [32mâœ“[39m nĂªn xá»­ lĂ½ kĂ©o tháº£ (Drag and Drop) thĂ nh cĂ´ng[32m 20[2mms[22m[39m
+       [32mâœ“[39m nĂªn hiá»ƒn thá»‹ form nháº­p máº­t kháº©u[32m 11[2mms[22m[39m
+       [32mâœ“[39m nĂªn bĂ¡o lá»—i náº¿u máº­t kháº©u quĂ¡ ngáº¯n[32m 54[2mms[22m[39m
+[31m       [31mĂ—[31m nĂªn Ä‘áº·t láº¡i máº­t kháº©u thĂ nh cĂ´ng vĂ  chuyá»ƒn hÆ°á»›ng[39m[33m 5031[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m14 passed[39m[22m[90m (15)[39m
+[2m   Start at [22m 14:06:17
+[2m   Duration [22m 11.13s[2m (transform 373ms, setup 335ms, collect 3.83s, tests 5.55s, environment 1.16s, prepare 22ms)[22m
+

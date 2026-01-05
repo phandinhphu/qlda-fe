@@ -24,6 +24,7 @@ export default function Header() {
         const stored = localStorage.getItem(notificationKey);
         return stored ? JSON.parse(stored) : [];
     });
+
     const [showNotifications, setShowNotifications] = useState(false);
 
     const [unreadCount, setUnreadCount] = useState(() => {
