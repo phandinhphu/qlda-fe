@@ -1,7 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, beforeAll, afterAll, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import TaskModalSteps from '../../components/listComponents/TaskModalSteps';
 import * as taskServices from '../../services/taskServices';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Mock taskServices
 vi.mock('../../services/taskServices', () => ({
@@ -9,6 +11,21 @@ vi.mock('../../services/taskServices', () => ({
     toggleStep: vi.fn(),
     getStepByTaskId: vi.fn(),
 }));
+
+// Setup logging
+const LOG_DIR = 'C:\\Users\\MSI 2025\\Downloads';
+const LOG_FILE = path.join(LOG_DIR, `TaskModalSteps_test_${new Date().toISOString().replace(/:/g, '-')}.txt`);
+let logContent = [];
+let currentTestName = '';
+let testsPassed = 0;
+let testsFailed = 0;
+
+function writeLog(message) {
+    const timestamp = new Date().toISOString();
+    const logMessage = `[${timestamp}] ${message}`;
+    logContent.push(logMessage);
+    console.log(logMessage);
+}
 
 describe('TaskModalSteps Component', () => {
     const mockTask = {
@@ -24,15 +41,56 @@ describe('TaskModalSteps Component', () => {
         { _id: 'step-3', title: 'Step 3', is_completed: false },
     ];
 
-    beforeEach(() => {
+    beforeAll(() => {
+        writeLog('='.repeat(80));
+        writeLog('Starting TaskModalSteps Test Suite');
+        writeLog(`Test File: ${LOG_FILE}`);
+        writeLog('='.repeat(80));
+    });
+
+    afterAll(() => {
+        writeLog('');
+        writeLog('='.repeat(80));
+        writeLog('Test Suite Completed');
+        writeLog(`Total Tests Passed: ${testsPassed}`);
+        writeLog(`Total Tests Failed: ${testsFailed}`);
+        writeLog(`Total Tests: ${testsPassed + testsFailed}`);
+        writeLog('='.repeat(80));
+
+        // Write logs to file
+        try {
+            fs.writeFileSync(LOG_FILE, logContent.join('\n'), 'utf8');
+            console.log(`\n✓ Logs saved to: ${LOG_FILE}`);
+        } catch (error) {
+            console.error(`Error writing log file: ${error.message}`);
+        }
+    });
+
+    beforeEach((context) => {
         vi.clearAllMocks();
         taskServices.getStepByTaskId.mockResolvedValue({ data: mockSteps });
+        currentTestName = context.task.name;
+        writeLog(`\n▶ TEST START: ${currentTestName}`);
+    });
+
+    afterEach((context) => {
+        const result = context.task.result?.state || 'unknown';
+        if (result === 'pass') {
+            testsPassed++;
+            writeLog(`✓ TEST PASSED: ${currentTestName}`);
+        } else if (result === 'fail') {
+            testsFailed++;
+            const error = context.task.result?.errors?.[0];
+            writeLog(`✗ TEST FAILED: ${currentTestName}`);
+            if (error) {
+                writeLog(`  Error: ${error.message}`);
+            }
+        }
     });
 
     describe('Rendering', () => {
         it('should render the component with title', async () => {
             render(<TaskModalSteps task={mockTask} onUpdate={mockOnUpdate} />);
-
             expect(screen.getByText('Việc cần làm')).toBeInTheDocument();
         });
 
@@ -54,7 +112,7 @@ describe('TaskModalSteps Component', () => {
             render(<TaskModalSteps task={mockTask} onUpdate={mockOnUpdate} />);
 
             await waitFor(() => {
-                expect(screen.getByText('Thêm mô tả chi tiết...')).toBeInTheDocument();
+                expect(screen.getByText('Thêm một mục')).toBeInTheDocument();
             });
         });
 
@@ -62,13 +120,12 @@ describe('TaskModalSteps Component', () => {
             render(<TaskModalSteps task={mockTask} onUpdate={mockOnUpdate} />);
 
             await waitFor(() => {
-                const addButton = screen.getByText('Thêm mô tả chi tiết...');
+                const addButton = screen.getByText('Thêm một mục');
                 fireEvent.click(addButton);
             });
 
-            expect(screen.getByPlaceholderText('Thêm mô tả chi tiết...')).toBeInTheDocument();
+            expect(screen.getByPlaceholderText('Thêm một mục...')).toBeInTheDocument();
             expect(screen.getByText('Thêm')).toBeInTheDocument();
-            expect(screen.getByText('✕')).toBeInTheDocument();
         });
     });
 
@@ -144,11 +201,11 @@ describe('TaskModalSteps Component', () => {
             render(<TaskModalSteps task={mockTask} onUpdate={mockOnUpdate} />);
 
             await waitFor(() => {
-                const addButton = screen.getByText('Thêm mô tả chi tiết...');
+                const addButton = screen.getByText('Thêm một mục');
                 fireEvent.click(addButton);
             });
 
-            const textarea = screen.getByPlaceholderText('Thêm mô tả chi tiết...');
+            const textarea = screen.getByPlaceholderText('Thêm một mục...');
             fireEvent.change(textarea, { target: { value: 'New Step' } });
 
             const submitButton = screen.getByText('Thêm');
@@ -164,7 +221,7 @@ describe('TaskModalSteps Component', () => {
             render(<TaskModalSteps task={mockTask} onUpdate={mockOnUpdate} />);
 
             await waitFor(() => {
-                const addButton = screen.getByText('Thêm mô tả chi tiết...');
+                const addButton = screen.getByText('Thêm một mục');
                 fireEvent.click(addButton);
             });
 
@@ -178,11 +235,11 @@ describe('TaskModalSteps Component', () => {
             render(<TaskModalSteps task={mockTask} onUpdate={mockOnUpdate} />);
 
             await waitFor(() => {
-                const addButton = screen.getByText('Thêm mô tả chi tiết...');
+                const addButton = screen.getByText('Thêm một mục');
                 fireEvent.click(addButton);
             });
 
-            const textarea = screen.getByPlaceholderText('Thêm mô tả chi tiết...');
+            const textarea = screen.getByPlaceholderText('Thêm một mục...');
             fireEvent.change(textarea, { target: { value: '   ' } });
 
             const submitButton = screen.getByText('Thêm');
@@ -198,19 +255,19 @@ describe('TaskModalSteps Component', () => {
             render(<TaskModalSteps task={mockTask} onUpdate={mockOnUpdate} />);
 
             await waitFor(() => {
-                const addButton = screen.getByText('Thêm mô tả chi tiết...');
+                const addButton = screen.getByText('Thêm một mục');
                 fireEvent.click(addButton);
             });
 
-            const textarea = screen.getByPlaceholderText('Thêm mô tả chi tiết...');
+            const textarea = screen.getByPlaceholderText('Thêm một mục...');
             fireEvent.change(textarea, { target: { value: 'New Step' } });
 
             const submitButton = screen.getByText('Thêm');
             fireEvent.click(submitButton);
 
             await waitFor(() => {
-                expect(screen.getByText('Thêm mô tả chi tiết...')).toBeInTheDocument();
-                expect(screen.queryByPlaceholderText('Thêm mô tả chi tiết...')).not.toBeInTheDocument();
+                expect(screen.getByText('Thêm một mục')).toBeInTheDocument();
+                expect(screen.queryByPlaceholderText('Thêm một mục...')).not.toBeInTheDocument();
             });
         });
 
@@ -220,11 +277,11 @@ describe('TaskModalSteps Component', () => {
             render(<TaskModalSteps task={mockTask} onUpdate={mockOnUpdate} />);
 
             await waitFor(() => {
-                const addButton = screen.getByText('Thêm mô tả chi tiết...');
+                const addButton = screen.getByText('Thêm một mục');
                 fireEvent.click(addButton);
             });
 
-            const textarea = screen.getByPlaceholderText('Thêm mô tả chi tiết...');
+            const textarea = screen.getByPlaceholderText('Thêm một mục...');
             fireEvent.change(textarea, { target: { value: 'New Step' } });
 
             const submitButton = screen.getByText('Thêm');
@@ -239,18 +296,18 @@ describe('TaskModalSteps Component', () => {
             render(<TaskModalSteps task={mockTask} onUpdate={mockOnUpdate} />);
 
             await waitFor(() => {
-                const addButton = screen.getByText('Thêm mô tả chi tiết...');
+                const addButton = screen.getByText('Thêm một mục');
                 fireEvent.click(addButton);
             });
 
-            const textarea = screen.getByPlaceholderText('Thêm mô tả chi tiết...');
+            const textarea = screen.getByPlaceholderText('Thêm một mục...');
             fireEvent.change(textarea, { target: { value: 'Some text' } });
 
-            const cancelButton = screen.getByText('✕');
+            const cancelButton = screen.getByText('close');
             fireEvent.click(cancelButton);
 
-            expect(screen.queryByPlaceholderText('Thêm mô tả chi tiết...')).not.toBeInTheDocument();
-            expect(screen.getByText('Thêm mô tả chi tiết...')).toBeInTheDocument();
+            expect(screen.queryByPlaceholderText('Thêm một mục...')).not.toBeInTheDocument();
+            expect(screen.getByText('Thêm một mục')).toBeInTheDocument();
         });
 
         it('should submit step when Enter key is pressed without Shift', async () => {
@@ -260,11 +317,11 @@ describe('TaskModalSteps Component', () => {
             render(<TaskModalSteps task={mockTask} onUpdate={mockOnUpdate} />);
 
             await waitFor(() => {
-                const addButton = screen.getByText('Thêm mô tả chi tiết...');
+                const addButton = screen.getByText('Thêm một mục');
                 fireEvent.click(addButton);
             });
 
-            const textarea = screen.getByPlaceholderText('Thêm mô tả chi tiết...');
+            const textarea = screen.getByPlaceholderText('Thêm một mục...');
             fireEvent.change(textarea, { target: { value: 'New Step' } });
             fireEvent.keyDown(textarea, { key: 'Enter', shiftKey: false });
 
@@ -277,15 +334,15 @@ describe('TaskModalSteps Component', () => {
             render(<TaskModalSteps task={mockTask} onUpdate={mockOnUpdate} />);
 
             await waitFor(() => {
-                const addButton = screen.getByText('Thêm mô tả chi tiết...');
+                const addButton = screen.getByText('Thêm một mục');
                 fireEvent.click(addButton);
             });
 
-            const textarea = screen.getByPlaceholderText('Thêm mô tả chi tiết...');
+            const textarea = screen.getByPlaceholderText('Thêm một mục...');
             fireEvent.change(textarea, { target: { value: 'Some text' } });
             fireEvent.keyDown(textarea, { key: 'Escape' });
 
-            expect(screen.queryByPlaceholderText('Thêm mô tả chi tiết...')).not.toBeInTheDocument();
+            expect(screen.queryByPlaceholderText('Thêm một mục...')).not.toBeInTheDocument();
         });
     });
 
@@ -392,11 +449,11 @@ describe('TaskModalSteps Component', () => {
             });
 
             await waitFor(() => {
-                const addButton = screen.getByText('Thêm mô tả chi tiết...');
+                const addButton = screen.getByText('Thêm một mục');
                 fireEvent.click(addButton);
             });
 
-            const textarea = screen.getByPlaceholderText('Thêm mô tả chi tiết...');
+            const textarea = screen.getByPlaceholderText('Thêm một mục...');
             fireEvent.change(textarea, { target: { value: 'New Step' } });
 
             const submitButton = screen.getByText('Thêm');
@@ -446,10 +503,10 @@ describe('TaskModalSteps Component', () => {
             });
 
             // Add new step
-            const addButton = screen.getByText('Thêm mô tả chi tiết...');
+            const addButton = screen.getByText('Thêm một mục');
             fireEvent.click(addButton);
 
-            const textarea = screen.getByPlaceholderText('Thêm mô tả chi tiết...');
+            const textarea = screen.getByPlaceholderText('Thêm một mục...');
             fireEvent.change(textarea, { target: { value: 'New Step' } });
 
             const submitButton = screen.getByText('Thêm');

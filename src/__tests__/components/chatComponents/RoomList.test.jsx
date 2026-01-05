@@ -1,12 +1,29 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import RoomList from '../../../components/chatComponents/RoomList';
 import * as chatServices from '../../../services/chatServices';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Mock services
 vi.mock('../../../services/chatServices');
+
+// Setup logging
+const LOG_DIR = 'C:\\Users\\MSI 2025\\Downloads';
+const LOG_FILE = path.join(LOG_DIR, `RoomList_test_${new Date().toISOString().replace(/:/g, '-')}.txt`);
+let logContent = [];
+let currentTestName = '';
+let testsPassed = 0;
+let testsFailed = 0;
+
+function writeLog(message) {
+    const timestamp = new Date().toISOString();
+    const logMessage = `[${timestamp}] ${message}`;
+    logContent.push(logMessage);
+    console.log(logMessage);
+}
 
 // Mock hooks
 vi.mock('../../../hooks/socket', () => ({
@@ -60,15 +77,54 @@ describe('RoomList Component', () => {
         },
     ];
 
-    beforeEach(() => {
+    beforeAll(() => {
+        writeLog('='.repeat(80));
+        writeLog('Starting RoomList Test Suite');
+        writeLog(`Test File: ${LOG_FILE}`);
+        writeLog('='.repeat(80));
+    });
+
+    afterAll(() => {
+        writeLog('');
+        writeLog('='.repeat(80));
+        writeLog('Test Suite Completed');
+        writeLog(`Total Tests Passed: ${testsPassed}`);
+        writeLog(`Total Tests Failed: ${testsFailed}`);
+        writeLog(`Total Tests: ${testsPassed + testsFailed}`);
+        writeLog('='.repeat(80));
+
+        // Write logs to file
+        try {
+            fs.writeFileSync(LOG_FILE, logContent.join('\n'), 'utf8');
+            console.log(`\n✓ Logs saved to: ${LOG_FILE}`);
+        } catch (error) {
+            console.error(`Error writing log file: ${error.message}`);
+        }
+    });
+
+    beforeEach((context) => {
         vi.clearAllMocks();
         chatServices.getUserChatRooms.mockResolvedValue({
             success: true,
             data: mockRooms,
         });
+        currentTestName = context.task.name;
+        writeLog(`\n▶ TEST START: ${currentTestName}`);
     });
 
-    afterEach(() => {
+    afterEach((context) => {
+        const result = context.task.result?.state || 'unknown';
+        if (result === 'pass') {
+            testsPassed++;
+            writeLog(`✓ TEST PASSED: ${currentTestName}`);
+        } else if (result === 'fail') {
+            testsFailed++;
+            const error = context.task.result?.errors?.[0];
+            writeLog(`✗ TEST FAILED: ${currentTestName}`);
+            if (error) {
+                writeLog(`  Error: ${error.message}`);
+            }
+        }
         vi.restoreAllMocks();
     });
 
@@ -208,8 +264,10 @@ describe('RoomList Component', () => {
 
             await waitFor(() => {
                 const room = screen.getByText('John Doe').closest('button');
-                const onlineIndicator = room?.querySelector('.bg-green-500');
+                const onlineIndicator = room?.querySelector('.status-dot');
                 expect(onlineIndicator).toBeInTheDocument();
+                // Default is offline (no is_online property)
+                expect(onlineIndicator).toHaveClass('bg-gray-300');
             });
         });
     });
